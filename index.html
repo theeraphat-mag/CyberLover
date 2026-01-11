@@ -101,7 +101,7 @@
         <div class="mt-4 md:mt-0 text-center">
             <p class="text-[10px] text-red-500 font-bold mb-1 uppercase tracking-widest text-red-500">Time to Detonation
             </p>
-            <div id="countdown" class="text-5xl font-bold text-red-600 font-mono">02:00:00</div>
+            <div id="countdown" class="text-5xl font-bold text-red-600 font-mono">00:01:00</div>
         </div>
     </header>
 
@@ -118,10 +118,13 @@
                 <p>[SYSTEM] Scanning SUT-Internal-WiFi Gateway...</p>
                 <p>[TCP] 10.0.0.5:80 -> 10.0.0.99:5412 [ACK, PSH]</p>
                 <p class="text-blue-500">[DATA] Sender: "ระเบิดถูกตั้งค่าความปลอดภัยระดับสูงแล้ว"</p>
-                <p class="text-blue-400 font-bold">[DATA] Receiver: "ใช้รหัสสมมาตรนี้เพื่อเริ่มขั้นตอนกู้ภัย: <span
-                        class="bg-green-900/40 text-green-400 select-all p-0.5">SUT-BOMB-SECRET-2026</span>"</p>
-                <p class="text-red-700 mt-2 font-bold blink">[WARNING] คัดลอกรหัสสมมาตรข้างบนไว้!
-                    คุณต้องใช้มันเปิดระบบด่านถัดไป</p>
+                <p class="text-blue-400 font-bold">[DATA] Receiver: "ใช้รหัสสมมาตรนี้เพื่อเริ่มขั้นตอนกู้ภัย
+                    (ถูกเข้ารหัสแล้ว)"</p>
+                <p class="text-green-400 font-bold">[ENCODED] Payload: <span id="phase1-encoded"
+                        class="bg-green-900/40 text-green-400 select-all p-0.5">LOADING...</span></p>
+                <p class="text-yellow-500 mt-2 italic">Hint: กลับข้อความ (Mirror) แล้วจึง Base64 Decode</p>
+                <p class="text-red-700 mt-2 font-bold blink">[WARNING] ถอดรหัสให้ได้ แล้วนำค่าไปใส่ใน Lock 1 เพื่อปลด
+                    OTP</p>
             </div>
             <div class="flex justify-center">
                 <button onclick="app.navToPhase2()" class="btn-military px-12 py-3">Access Authentication Panel</button>
@@ -186,8 +189,8 @@
                     <div id="loc-hint"
                         class="hidden text-[10px] text-blue-400 text-left w-full mb-4 bg-blue-900/10 p-3 border border-blue-900/30 leading-relaxed">
                         <span class="font-bold underline uppercase text-blue-300">GPS Intel Received:</span><br>
-                        "ตรวจพบพิกัดที่ Lat: 14.8818, Long: 102.0211... ตรวจสอบชื่อตึกบริหาร มทส.
-                        (ใส่รหัสตึก+ชั้นสูงสุด)"
+                        "ตรวจพบพิกัดที่ Lat: 14.8704, Long: 102.0209... ตรวจสอบชื่อสถานที่ มทส.
+"
                     </div>
                     <button onclick="app.unlock3()" id="btn-lock3" class="btn-military w-full py-2">Verify
                         Location</button>
@@ -236,6 +239,18 @@
                 <code class="text-4xl font-bold text-white tracking-widest">SUT{CPE_CTF_2026_BOMB_HERO}</code>
             </div>
         </div>
+
+        <!-- DETONATION SCREEN -->
+        <div id="detonated" class="hidden flex flex-col items-center py-20 text-center">
+            <div class="text-9xl mb-8">💥</div>
+            <h2 class="text-6xl font-bold text-red-600 mb-4 tracking-tighter uppercase">Mission Failed</h2>
+            <p class="text-xl text-red-400 uppercase tracking-widest italic">Bomb Detonated. Time Window Expired.</p>
+            <div
+                class="mt-12 p-8 border-2 border-dashed border-red-600 bg-red-950/20 shadow-[0_0_30px_rgba(255,0,0,0.15)]">
+                <p class="text-xs text-red-500 uppercase mb-2 font-bold">Status:</p>
+                <code class="text-4xl font-bold text-white tracking-widest">SUT{CPE_CTF_2026_TIMEOUT}</code>
+            </div>
+        </div>
     </main>
 
     <div id="modal" class="hidden fixed inset-0 bg-black/95 z-[100] flex items-center justify-center p-4">
@@ -251,7 +266,14 @@
             config: {
                 symmetricKey: "SUT-BOMB-SECRET-2026",
                 otpSeed: "JBSWY3DPEHPK3PXP", // Base32 Standard
-                locationCode: "F109"
+                locationAnswer: [
+                    "หอแห้ว",
+                    "หอสุรนภา",
+                    "HORHAEW",
+                    "HOR HAEW",
+                    "HORHAEW DORMITORY",
+                    "HORSURANAPA"
+                ]
             },
             timeLeft: 2 * 60 * 60,
             otpInterval: null,
@@ -262,12 +284,17 @@
             init: function () {
                 this.startTimer();
                 this.setupAuthorizationObserver();
+                this.injectPhase1Encoded();
             },
 
             startTimer: function () {
                 const display = document.getElementById('countdown');
-                setInterval(() => {
-                    if (this.timeLeft <= 0) return;
+                this.timerInterval = setInterval(() => {
+                    if (this.timeLeft <= 0) {
+                        clearInterval(this.timerInterval);
+                        this.detonate();
+                        return;
+                    }
                     this.timeLeft--;
                     const h = Math.floor(this.timeLeft / 3600).toString().padStart(2, '0');
                     const m = Math.floor((this.timeLeft % 3600) / 60).toString().padStart(2, '0');
@@ -357,13 +384,22 @@
 
 
             unlock3: function () {
-                const val = document.getElementById('loc-input').value.trim().toUpperCase();
-                if (val === this.config.locationCode) {
+                const val = document.getElementById('loc-input')
+                    .value.trim()
+                    .toUpperCase();
+
+                const answers = this.config.locationAnswer.map(a => a.toUpperCase());
+
+                if (answers.includes(val)) {
                     document.getElementById('icon3').innerText = "🔓";
                     document.getElementById('p3-next').classList.remove('hidden');
-                    this.showModal("UNLOCK 3 SUCCESS: ยืนยันพิกัด มทส. ถูกต้อง!");
-                } else { this.showModal("ERROR: รหัสอาคารไม่ถูกต้อง"); }
+                    this.showModal("UNLOCK 3 SUCCESS: Location verified");
+                } else {
+                    this.showModal("ERROR: Location token mismatch");
+                }
             },
+
+
 
             navToPhase3: function () {
                 const p3 = document.getElementById('phase3');
@@ -397,6 +433,29 @@
                     document.getElementById('victory').classList.remove('hidden');
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 };
+            }
+            ,
+
+            detonate: function () {
+                // Stop OTP updates if running
+                if (this.otpInterval) {
+                    clearInterval(this.otpInterval);
+                    this.otpInterval = null;
+                }
+
+                // Hide interactive UI and show detonation screen
+                document.querySelectorAll('section, header, #otp-tool').forEach(s => s.classList.add('hidden'));
+                document.getElementById('detonated').classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+            ,
+
+            injectPhase1Encoded: function () {
+                // สร้าง payload เข้ารหัส: Reverse แล้ว Base64
+                const reversed = this.config.symmetricKey.split('').reverse().join('');
+                const encoded = btoa(reversed);
+                const el = document.getElementById('phase1-encoded');
+                if (el) el.innerText = encoded;
             }
         };
 
