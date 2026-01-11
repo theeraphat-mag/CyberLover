@@ -24,14 +24,30 @@
             player: { 
                 x: 3500, y: 500, // Starting at Gate 1
                 width: 48, height: 64, 
-                speed: 8, 
+                speed: 5, 
                 frameX: 0, frameY: 0, 
                 moving: false, 
                 direction: 0,
                 hitbox: { x: 0, y: 0, w: 32, h: 20, offsetX: 8, offsetY: 44 }
             },
             
-            obstacles: [{"x":418,"y":376,"w":296,"h":106}, {"x":801,"y":389,"w":290,"h":97}, {"x":544,"y":518,"w":158,"h":76}, {"x":532,"y":621,"w":178,"h":112}, {"x":150,"y":734,"w":235,"h":132}, {"x":508,"y":738,"w":207,"h":140}, {"x":772,"y":514,"w":176,"h":107}, {"x":756,"y":630,"w":196,"h":106}, {"x":728,"y":757,"w":217,"h":139}, {"x":1004,"y":526,"w":248,"h":98}, {"x":1019,"y":645,"w":213,"h":97}, {"x":1008,"y":752,"w":225,"h":149}, {"x":1286,"y":517,"w":237,"h":134}, {"x":1305,"y":666,"w":199,"h":243}, {"x":1577,"y":518,"w":202,"h":164}, {"x":1800,"y":515,"w":233,"h":179}, {"x":1562,"y":778,"w":280,"h":150}, {"x":1612,"y":977,"w":256,"h":437}, {"x":1204,"y":974,"w":287,"h":578}, {"x":664,"y":1350,"w":484,"h":192}, {"x":1496,"y":1482,"w":411,"h":101}, {"x":1961,"y":998,"w":488,"h":552},{"x":62,"y":164,"w":1414,"h":136},{"x":1483,"y":169,"w":805,"h":132},{"x":1546,"y":329,"w":743,"h":95},{"x":1540,"y":302,"w":749,"h":36},{"x":1846,"y":700,"w":207,"h":221},{"x":2086,"y":475,"w":259,"h":454},{"x":2330,"y":775,"w":60,"h":165},{"x":1944,"y":987,"w":493,"h":377},{"x":1970,"y":1376,"w":477,"h":245},{"x":1957,"y":1360,"w":494,"h":31},{"x":892,"y":1670,"w":1257,"h":64},{"x":2148,"y":1671,"w":321,"h":56},{"x":263,"y":1381,"w":338,"h":113},{"x":351,"y":1504,"w":266,"h":108},{"x":428,"y":1624,"w":223,"h":61},{"x":53,"y":1081,"w":304,"h":145},{"x":211,"y":1009,"w":333,"h":178},{"x":494,"y":979,"w":149,"h":203},{"x":138,"y":1042,"w":84,"h":55},{"x":172,"y":1022,"w":68,"h":33},{"x":101,"y":1059,"w":59,"h":47},{"x":356,"y":1178,"w":263,"h":248},{"x":140,"y":1224,"w":256,"h":109},{"x":196,"y":1332,"w":204,"h":73},{"x":18,"y":1379,"w":99,"h":202},{"x":20,"y":1582,"w":125,"h":129},{"x":130,"y":1479,"w":55,"h":156},{"x":192,"y":1531,"w":50,"h":95},{"x":240,"y":1567,"w":32,"h":82},{"x":280,"y":1626,"w":27,"h":78},{"x":307,"y":1669,"w":33,"h":63},{"x":154,"y":1640,"w":142,"h":112},{"x":41,"y":310,"w":343,"h":315},{"x":39,"y":646,"w":161,"h":54},{"x":20,"y":620,"w":212,"h":50},{"x":33,"y":847,"w":99,"h":77},{"x":141,"y":869,"w":94,"h":88},{"x":101,"y":931,"w":67,"h":51},{"x":303,"y":869,"w":96,"h":71},{"x":1561,"y":675,"w":169,"h":88}],
+            obstacles: [{"x":418,"y":376,"w":296,"h":106}, {"x":801,"y":389,"w":290,"h":97}, {"x":544,"y":518,"w":140,"h":76}, 
+                {"x":532,"y":621,"w":178,"h":112}, {"x":150,"y":734,"w":235,"h":132}, {"x":508,"y":738,"w":180,"h":140}, {"x":772,"y":514,"w":176,"h":107}, 
+                {"x":756,"y":630,"w":196,"h":106}, {"x":728,"y":757,"w":170,"h":139}, {"x":1004,"y":526,"w":215,"h":98}, {"x":1019,"y":645,"w":213,"h":97}, 
+                {"x":1008,"y":752,"w":225,"h":149}, {"x":1286,"y":517,"w":237,"h":134}, {"x":1305,"y":666,"w":199,"h":243}, {"x":1577,"y":518,"w":202,"h":164}, 
+                {"x":1800,"y":515,"w":233,"h":179}, {"x":1562,"y":778,"w":250,"h":150}, {"x":1612,"y":977,"w":230,"h":437}, {"x":1204,"y":974,"w":250,"h":578}, 
+                {"x":664,"y":1350,"w":450,"h":192}, {"x":1496,"y":1482,"w":411,"h":101}, {"x":1961,"y":998,"w":488,"h":552},{"x":62,"y":164,"w":1414,"h":136},
+                {"x":1483,"y":169,"w":805,"h":132},{"x":1546,"y":329,"w":743,"h":95},{"x":1540,"y":302,"w":749,"h":36},{"x":1846,"y":700,"w":190,"h":221},
+                {"x":2086,"y":475,"w":259,"h":454},{"x":2330,"y":775,"w":60,"h":165},{"x":1944,"y":987,"w":493,"h":377},{"x":1970,"y":1376,"w":477,"h":245},
+                {"x":1957,"y":1360,"w":494,"h":31},{"x":892,"y":1670,"w":1257,"h":64},{"x":2148,"y":1671,"w":321,"h":56},{"x":263,"y":1381,"w":338,"h":113},
+                {"x":351,"y":1504,"w":266,"h":108},{"x":428,"y":1624,"w":223,"h":61},{"x":53,"y":1081,"w":304,"h":145},{"x":211,"y":1009,"w":333,"h":178},
+                {"x":494,"y":979,"w":149,"h":203},{"x":138,"y":1042,"w":84,"h":55},{"x":172,"y":1022,"w":68,"h":33},{"x":101,"y":1059,"w":59,"h":47},
+                {"x":356,"y":1178,"w":263,"h":248},{"x":140,"y":1224,"w":256,"h":109},{"x":196,"y":1332,"w":204,"h":73},{"x":18,"y":1379,"w":99,"h":202},
+                {"x":20,"y":1582,"w":125,"h":129},{"x":130,"y":1479,"w":55,"h":156},{"x":192,"y":1531,"w":50,"h":95},{"x":240,"y":1567,"w":32,"h":82},
+                {"x":280,"y":1626,"w":27,"h":78},{"x":307,"y":1669,"w":33,"h":63},{"x":154,"y":1640,"w":142,"h":112},{"x":41,"y":310,"w":300,"h":315},
+                {"x":39,"y":646,"w":161,"h":54},{"x":20,"y":620,"w":190,"h":50},{"x":33,"y":847,"w":99,"h":77},{"x":141,"y":869,"w":94,"h":88},
+                {"x":101,"y":931,"w":67,"h":51},{"x":303,"y":830,"w":96,"h":71},{"x":1500,"y":675,"w":150,"h":88},{"x":2208,"y":113,"w":253,"h":68},
+                {"x":1146,"y":326,"w":351,"h":71},{"x":1488,"y":311,"w":50,"h":40},{"x":798,"y":1038,"w":168,"h":95},{"x":1020,"y":1010,"w":108,"h":89},{"x":787,"y":1286,"w":80,"h":51},{"x":1038,"y":1134,"w":88,"h":195},{"x":692,"y":1247,"w":62,"h":73},{"x":706,"y":1056,"w":40,"h":120},{"x":721,"y":961,"w":69,"h":56}],
 
             // --- CUSTOM CHECKPOINTS ---
             // Set these using coordinates from map_tool.html
@@ -173,7 +189,15 @@
                 // Map
                 if (this.assetsLoaded >= 1) this.ctx.drawImage(this.mapImage, 0, 0, this.worldWidth, this.worldHeight);
 
-                // --- DRAW PLAYER (Procedural Circle with Arms) ---
+                // --- DEBUG: DRAW OBSTACLES (FAINTLY) ---
+                this.ctx.fillStyle = 'rgba(255, 0, 0, 0.3)'; // Faint red
+                this.ctx.strokeStyle = 'rgba(255, 0, 0, 0.5)';
+                this.obstacles.forEach(obs => {
+                    this.ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
+                    this.ctx.strokeRect(obs.x, obs.y, obs.w, obs.h);
+                });
+
+                // --- DRAW PLAYER (Procedural Circle with Arms & Legs) ---
                 this.ctx.save();
                 this.ctx.translate(this.player.x + this.player.width/2, this.player.y + this.player.height/2);
                 
@@ -181,12 +205,64 @@
                 const swing = this.player.moving ? Math.sin(Date.now() / 100) * 0.8 : 0;
                 
                 // Colors
-                const skinColor = '#ffccaa';
-                const armColor = '#eebb99';
+                const skinColor = '#ffe0bd'; // Natural skin tone
+                const armColor = '#ffd1aa';  // Slightly darker for arms
+                const pantsColor = '#2563eb';  // Blue pants color
+                const shoeColor = '#1f2937';   // Dark gray/black shoes
+
+                // Left Leg (Swinging Opposite to Left Arm)
+                this.ctx.save();
+                this.ctx.translate(-8, 12); // Hips position
+                this.ctx.rotate(-swing); // Opposite swing
+                
+                // Leg Skin (Full length underneath)
+                this.ctx.fillStyle = skinColor;
+                this.ctx.beginPath();
+                this.ctx.roundRect(-4, 0, 8, 20, 4); 
+                this.ctx.fill();
+                
+                // Shorts (Blue top half)
+                this.ctx.fillStyle = pantsColor;
+                this.ctx.beginPath();
+                this.ctx.fillRect(-4, 0, 8, 12); 
+                this.ctx.fill();
+
+                // Shoe (Bottom part)
+                this.ctx.fillStyle = shoeColor;
+                this.ctx.beginPath();
+                this.ctx.roundRect(-5, 16, 10, 6, 2); // Slightly wider than leg
+                this.ctx.fill();
+                
+                this.ctx.restore();
+
+                // Right Leg (Swinging Opposite to Right Arm)
+                this.ctx.save();
+                this.ctx.translate(8, 12); // Hips position
+                this.ctx.rotate(swing); // Opposite swing
+                
+                // Leg Skin (Full length underneath)
+                this.ctx.fillStyle = skinColor;
+                this.ctx.beginPath();
+                this.ctx.roundRect(-4, 0, 8, 20, 4); 
+                this.ctx.fill();
+
+                // Shorts (Blue top half)
+                this.ctx.fillStyle = pantsColor;
+                this.ctx.beginPath();
+                this.ctx.fillRect(-4, 0, 8, 12); 
+                this.ctx.fill();
+
+                // Shoe (Bottom part)
+                this.ctx.fillStyle = shoeColor;
+                this.ctx.beginPath();
+                this.ctx.roundRect(-5, 16, 10, 6, 2); // Slightly wider than leg
+                this.ctx.fill();
+
+                this.ctx.restore();
 
                 // Left Arm (Swinging)
                 this.ctx.save();
-                this.ctx.translate(-15, 5);
+                this.ctx.translate(-18, 0); // Shoulder position
                 this.ctx.rotate(swing);
                 this.ctx.fillStyle = armColor;
                 this.ctx.beginPath();
@@ -196,7 +272,7 @@
 
                 // Right Arm (Swinging Opposite)
                 this.ctx.save();
-                this.ctx.translate(15, 5);
+                this.ctx.translate(18, 0); // Shoulder position
                 this.ctx.rotate(-swing);
                 this.ctx.fillStyle = armColor;
                 this.ctx.beginPath();
