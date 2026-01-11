@@ -67,17 +67,23 @@
 </head>
 <body>
 
-    <div id="mission-hud" class="hud-panel">
+    <div id="mission-hud" class="hud-panel" style="display:none;">
         <h3 style="color:#fbbf24; margin-bottom:10px;">MISSION OBJECTIVE</h3>
         <p id="objective-text">Go to the SUT Farm (WIFI Tower) to intercept the signal.</p>
         <div style="margin-top:10px; font-size:8px; color:#aaa;">[WASD] Move | [SHIFT] Sprint</div>
     </div>
     
-    <div id="timer-hud" class="hud-panel">
+    <div id="timer-hud" class="hud-panel" style="display:none;">
         TIME: <span id="timer-display">02:00:00</span>
     </div>
 
-    <canvas id="game-canvas"></canvas>
+    <div id="start-screen" style="position:fixed; inset:0; background: #000; z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+        <h1 style="color: #fbbf24; font-size: 3rem; margin-bottom: 20px; text-shadow: 0 0 20px #fbbf24;">OPERATION:<br>RED SKY</h1>
+        <p style="color: #aaa; margin-bottom: 40px; font-size: 0.8rem;">SUT CTF RPG 2026</p>
+        <button id="start-btn" class="btn-military" style="width: 200px; font-size: 1.2rem;">START MISSION</button>
+    </div>
+
+    <canvas id="game-canvas" style="display:none;"></canvas>
 
     <div id="phase-modal">
         <div id="modal-content"></div>
@@ -110,7 +116,14 @@
             window.addEventListener('gesturechange', preventZoom, { passive: false });
             window.addEventListener('gestureend', preventZoom, { passive: false });
 
-            game.init();
+            // Start Button Logic
+            document.getElementById('start-btn').addEventListener('click', () => {
+                document.getElementById('start-screen').style.display = 'none';
+                document.getElementById('game-canvas').style.display = 'block';
+                document.getElementById('mission-hud').style.display = 'block';
+                document.getElementById('timer-hud').style.display = 'block';
+                game.init();
+            });
         };
     </script>
 </body>
