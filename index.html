@@ -93,10 +93,23 @@
     <script src="game_logic.js"></script>
     <script>
         window.onload = () => {
+            // Aggressive Zoom Prevention
+            const preventZoom = (e) => {
+                if (e.ctrlKey || e.scale !== undefined && e.scale !== 1) {
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                }
+            };
+
             window.addEventListener('keydown', e => {
-                if (e.ctrlKey && (e.key === '=' || e.key === '-' || e.key === '+' || e.key === '0')) e.preventDefault();
+                if (e.ctrlKey && ['=', '-', '+', '0'].includes(e.key)) e.preventDefault();
             });
-            window.addEventListener('wheel', e => { if (e.ctrlKey) e.preventDefault(); }, { passive: false });
+
+            window.addEventListener('wheel', preventZoom, { passive: false });
+            window.addEventListener('gesturestart', preventZoom, { passive: false });
+            window.addEventListener('gesturechange', preventZoom, { passive: false });
+            window.addEventListener('gestureend', preventZoom, { passive: false });
+
             game.init();
         };
     </script>

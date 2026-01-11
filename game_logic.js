@@ -67,11 +67,19 @@
                 
                 this.mapImage.onload = () => {
                     this.assetsLoaded++;
+                    // 1. Set World Dimensions strictly from Image
                     this.worldWidth = this.mapImage.naturalWidth;
                     this.worldHeight = this.mapImage.naturalHeight;
-                    console.log(`Map Loaded: ${this.worldWidth}x${this.worldHeight}`);
+                    console.log(`World Size Set: ${this.worldWidth}x${this.worldHeight}`);
                     
-                    // Safe Start Position (Center of Map)
+                    // 2. Validate Dimensions
+                    if(this.worldWidth === 0 || this.worldHeight === 0) {
+                        alert("Error: Map image loaded but has 0 dimensions. Please check the image file.");
+                        return;
+                    }
+
+                    // 3. Initial Spawn Position (Center safe spot)
+                    // You can change this to a specific coordinate if you want
                     this.player.x = this.worldWidth / 2;
                     this.player.y = this.worldHeight / 2;
                 };
@@ -124,6 +132,12 @@
                 if (!collided) {
                     this.player.x = nextX;
                     this.player.y = nextY;
+                }
+
+                // World Boundaries (Strict Clamp)
+                if (this.worldWidth > 0 && this.worldHeight > 0) {
+                    this.player.x = Math.max(0, Math.min(this.player.x, this.worldWidth - this.player.width));
+                    this.player.y = Math.max(0, Math.min(this.player.y, this.worldHeight - this.player.height));
                 }
 
                 // Camera
@@ -212,9 +226,9 @@
                     this.ctx.fill();
                 }
 
-                this.ctx.restore();
+                this.ctx.restore(); // Restore player transform
 
-                this.ctx.restore();
+                this.ctx.restore(); // Restore camera transform
             },
 
             gameLoop: function() {
