@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>SUT Map Tool - Coordinate & Collision Helper</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #1a1a1a; font-family: sans-serif; color: white; }
+        canvas { display: block; background: #000; cursor: crosshair; }
+        .ui { position: fixed; top: 10px; left: 10px; background: rgba(0,0,0,0.8); padding: 15px; border: 2px solid #fbbf24; pointer-events: none; }
+        .ui b { color: #fbbf24; }
+        .controls { position: fixed; bottom: 10px; left: 10px; background: rgba(0,0,0,0.8); padding: 10px; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="ui">
+        <div>MOUSE WORLD POS: <b id="coords">X=0, Y=0</b></div>
+        <div style="margin-top:5px; font-size:12px; color:#aaa;">Checkpoints & Obstacles helper</div>
+    </div>
+
+    <div class="controls">
+        [Click + Drag] Draw Obstacle | [Z] Undo | [X] Clear All | [P] Export Code to Console | [WASD] Pan Camera
+    </div>
+
+    <canvas id="tool-canvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('tool-canvas');
+        const ctx = canvas.getContext('2d');
+        const coordsDisplay = document.getElementById('coords');
+
+        const state = {
+            map: new Image(),
+            worldW: 2000, // Default fallback size
+            worldH: 1500,
+            camX: 0, camY: 0,
+            obstacles: [],
+            isDragging: false,
+            startX: 0, startY: 0,
+            currentRect: null,
+            keys: {}
+        };
+
+        // Initialize immediately
+        function init() {
+            resize();
+            state.map.src = 'sut_map.png';
+            state.map.onload = () => {
+                state.worldW = state.map.naturalWidth;
+                state.worldH = state.map.naturalHeight;
+                console.log("Map Loaded:", state.worldW, state.worldH);
+            };
+            state.map.onerror = () => {
+                alert("Error: Cannot load 'sut_map.png'. Make sure the file exists!");
+            };
+            
+            // Start Loop
+            render();
+        }
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+
+        // --- INPUTS ---
+        window.addEventListener('keydown', e => {
+            state.keys[e.key.toLowerCase()] = true;
+            if(e.key.toLowerCase() === 'z') state.obstacles.pop();
+            if(e.key.toLowerCase() === 'x' && confirm("Clear all?")) state.obstacles = [];
+            if(e.key.toLowerCase() === 'p') exportCode();
+        });
+        window.addEventListener('keyup', e => state.keys[e.key.toLowerCase()] = false);
+
+        canvas.addEventListener('mousedown', e => {
+            state.isDragging = true;
+            // Calculate World Position directly
+            state.startX = e.clientX + state.camX;
+            state.startY = e.clientY + state.camY;
+            state.currentRect = { x: state.startX, y: state.startY, w: 0, h: 0 };
+        });
+
+        window.addEventListener('mousemove', e => {
+            const worldX = e.clientX + state.camX;
+            const worldY = e.clientY + state.camY;
+            coordsDisplay.innerText = `X=${Math.round(worldX)}, Y=${Math.round(worldY)}`;
+
+            if (state.isDragging && state.currentRect) {
+                state.currentRect.w = worldX - state.startX;
+                state.currentRect.h = worldY - state.startY;
+            }
+        });
+
+        window.addEventListener('mouseup', e => {
+            if (!state.isDragging) return;
+            state.isDragging = false;
+            
+            if (state.currentRect) {
+                let r = state.currentRect;
+                // Normalize negative width/height
+                if (r.w < 0) { r.x += r.w; r.w = Math.abs(r.w); }
+                if (r.h < 0) { r.y += r.h; r.h = Math.abs(r.h); }
+                
+                // Add only if meaningful size
+                if (r.w > 5 && r.h > 5) {
+                    state.obstacles.push(r);
+                }
+            }
+            state.currentRect = null;
+        });
+
+        function exportCode() {
+            console.log("--- COPY THIS TO game_logic.js ---");
+            console.log(`obstacles: ${JSON.stringify(state.obstacles)},`);
+            console.log("----------------------------------");
+            alert("Obstacle data printed to Console (F12)!");
+        }
+
+        function update() {
+            const speed = 15; // Faster camera pan
+            if(state.keys['w'] || state.keys['arrowup']) state.camY -= speed;
+            if(state.keys['s'] || state.keys['arrowdown']) state.camY += speed;
+            if(state.keys['a'] || state.keys['arrowleft']) state.camX -= speed;
+            if(state.keys['d'] || state.keys['arrowright']) state.camX += speed;
+            
+            // Basic Clamp
+            if(state.camX < 0) state.camX = 0;
+            if(state.camY < 0) state.camY = 0;
+        }
+
+        function render() {
+            // Clear
+            ctx.fillStyle = '#222';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.save();
+            ctx.translate(-state.camX, -state.camY);
+
+            // 1. Draw Map
+            if(state.map.complete && state.map.naturalWidth > 0) {
+                ctx.drawImage(state.map, 0, 0);
+            } else {
+                // Placeholder Grid if map missing
+                ctx.strokeStyle = '#444';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(0, 0, state.worldW, state.worldH);
+                ctx.fillStyle = 'white';
+                ctx.font = '30px sans-serif';
+                ctx.fillText("LOADING MAP OR FILE MISSING...", 100, 100);
+            }
+
+            // 2. Draw Obstacles
+            ctx.fillStyle = 'rgba(255, 0, 0, 0.4)';
+            ctx.strokeStyle = '#ff0000';
+            ctx.lineWidth = 2;
+            
+            state.obstacles.forEach(r => {
+                ctx.fillRect(r.x, r.y, r.w, r.h);
+                ctx.strokeRect(r.x, r.y, r.w, r.h);
+            });
+
+            // 3. Draw Current Dragging Rect
+            if(state.currentRect) {
+                ctx.fillStyle = 'rgba(255, 255, 0, 0.5)';
+                ctx.fillRect(state.currentRect.x, state.currentRect.y, state.currentRect.w, state.currentRect.h);
+            }
+
+            ctx.restore();
+            update();
+            requestAnimationFrame(render);
+        }
+
+        // Start
+        init();
+    </script>
+</body>
+</html>
