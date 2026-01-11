@@ -1,0 +1,29 @@
+<section id="phase3" class="terminal-box p-8 rounded-lg border-red-900 animate-fade-in">
+    <h2 class="text-lg font-bold mb-8 text-red-500 flex items-center justify-center">
+        <span class="mr-2">⚡</span> Phase 3: Authorization - Final Override
+    </h2>
+
+    <!-- จุดสำคัญ: ผู้เล่นต้อง Inspect และเปลี่ยน data-role="user" เป็น "admin" -->
+    <div id="disarm-panel" class="bg-black border border-zinc-900 p-12 text-center" data-role="user">
+        <div class="mb-10">
+            <p class="text-xs text-zinc-600 uppercase mb-2">Current Privilege Level:</p>
+            <div id="role-tag" class="inline-block px-8 py-2 border border-red-900 text-red-900 text-xl font-bold uppercase italic tracking-widest">
+                Standard_Guest
+            </div>
+            <p class="text-[10px] text-red-600 mt-6 font-bold blink uppercase tracking-widest">Error 403: Forbidden - Admin permission required to disarm</p>
+        </div>
+
+        <div class="flex justify-center">
+            <button id="disarm-btn" disabled class="px-20 py-6 bg-zinc-900 text-zinc-700 font-bold rounded cursor-not-allowed border border-zinc-800 uppercase tracking-widest text-xl">
+                Disarm Bomb
+            </button>
+        </div>
+
+        <div class="mt-12 p-4 bg-red-950/10 border border-red-900/20 rounded">
+            <p class="text-[10px] text-zinc-600 italic">
+                "Developer Note: ระบบสิทธิ์ถูกล็อกไว้ใน HTML Attributes... <br>
+                บางทีการ 'แก้ไขสิทธิ์ตัวเอง' ผ่าน Inspect Element อาจจะเป็นทางเดียวที่เหลืออยู่"
+            </p>
+        </div>
+    </div>
+</section>
