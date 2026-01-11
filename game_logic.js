@@ -314,12 +314,26 @@
                 this.state = 'paused';
                 document.getElementById('phase-modal').style.display = 'block';
                 fetch(`phases/phase${id}.html`).then(r => r.text()).then(html => {
-                    document.getElementById('modal-content').innerHTML = html;
+                    const modalContent = document.getElementById('modal-content');
+                    modalContent.innerHTML = html;
+                    
+                    // Manually execute scripts
+                    Array.from(modalContent.querySelectorAll("script")).forEach( oldScript => {
+                        const newScript = document.createElement("script");
+                        Array.from(oldScript.attributes)
+                          .forEach( attr => newScript.setAttribute(attr.name, attr.value) );
+                        newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                        oldScript.parentNode.replaceChild(newScript, oldScript);
+                    });
+
                     this.attachPhaseLogic(id);
                 });
             },
             closeModal: function() { document.getElementById('phase-modal').style.display = 'none'; this.state = 'playing'; },
             completeLevel: function() {
+                // Ensure chat intervals are cleared if they exist from phase 1
+                if (window.chatInterval) clearInterval(window.chatInterval);
+                
                 this.closeModal();
                 this.level++;
                 if (this.level <= this.checkpoints.length) {
