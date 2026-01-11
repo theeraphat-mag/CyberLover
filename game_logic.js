@@ -189,14 +189,6 @@
                 // Map
                 if (this.assetsLoaded >= 1) this.ctx.drawImage(this.mapImage, 0, 0, this.worldWidth, this.worldHeight);
 
-                // --- DEBUG: DRAW OBSTACLES (FAINTLY) ---
-                this.ctx.fillStyle = 'rgba(255, 0, 0, 0.3)'; // Faint red
-                this.ctx.strokeStyle = 'rgba(255, 0, 0, 0.5)';
-                this.obstacles.forEach(obs => {
-                    this.ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
-                    this.ctx.strokeRect(obs.x, obs.y, obs.w, obs.h);
-                });
-
                 // --- DRAW PLAYER (Procedural Circle with Arms & Legs) ---
                 this.ctx.save();
                 this.ctx.translate(this.player.x + this.player.width/2, this.player.y + this.player.height/2);
