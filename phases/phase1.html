@@ -289,18 +289,18 @@
             
             <div class="file-section">
                 <h3>📁 ไฟล์ในเครื่อง</h3>
-                <div class="file-item" onclick="openFile('encrypted')">
+                <div class="file-item" onclick="window.openFile('encrypted')">
                     <span class="file-icon">🔒</span>
                     <span>secret_key.enc (ไฟล์เข้ารหัส)</span>
                 </div>
-                <div class="file-item" onclick="openFile('publicB')">
+                <div class="file-item" onclick="window.openFile('publicB')">
                     <span class="file-icon">🔑</span>
                     <span>public_key_B.pem</span>
                 </div>
             </div>
 
             <div class="btn-group">
-                <button onclick="openChat()">💬 เปิดห้องแชท</button>
+                <button onclick="window.openChat()">💬 เปิดห้องแชท</button>
             </div>
         </div>
 
@@ -315,16 +315,16 @@
     <!-- Modal สำหรับไฟล์เข้ารหัส -->
     <div id="encryptedModal" class="modal">
         <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('encryptedModal')">&times;</span>
+            <span class="close-btn" onclick="window.closeModal('encryptedModal')">&times;</span>
             <h2>🔒 secret_key.enc</h2>
             <p style="margin-top: 10px;">ไฟล์นี้ถูกเข้ารหัสด้วยรหัสผ่าน</p>
             <p style="margin-top: 10px; margin-bottom: 10px;">คำใบ้: GSV KZHHDLIW RH LMV GDL GSIVV ULFI</p>
             <input type="password" id="filePassword" placeholder="ใส่รหัสผ่าน...">
-            <button onclick="unlockFile()">ปลดล็อก</button>
+            <button onclick="window.unlockFile()">ปลดล็อก</button>
             <div id="fileContent" class="hidden" style="margin-top: 20px;">
                 <h3 class="success">✅ Private Key A (คุณ)</h3>
                 <div class="key-display" id="privateKeyA"></div>
-                <button onclick="copyKey('privateKeyA')">📋 Copy Key</button>
+                <button onclick="window.copyKey('privateKeyA')">📋 Copy Key</button>
             </div>
         </div>
     </div>
@@ -332,23 +332,22 @@
     <!-- Modal สำหรับ Public Key B -->
     <div id="publicBModal" class="modal">
         <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('publicBModal')">&times;</span>
+            <span class="close-btn" onclick="window.closeModal('publicBModal')">&times;</span>
             <h2>🔑 Public Key B</h2>
             <div class="key-display" id="publicKeyB"></div>
-            <button onclick="copyKey('publicKeyB')">📋 Copy Key</button>
+            <button onclick="window.copyKey('publicKeyB')">📋 Copy Key</button>
         </div>
     </div>
 
     <!-- Modal สำหรับแชท -->
     <div id="chatModal" class="modal">
         <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('chatModal')">&times;</span>
+            <span class="close-btn" onclick="window.closeModal('chatModal')">&times;</span>
             <h2>💬 ห้องแชทเข้ารหัส</h2>
-            <div class="chat-window" id="chatWindow"></div>
             <div>
                 <label>ส่งข้อความ (Plain Text):</label>
                 <input type="text" id="messageInput" placeholder="พิมพ์คำตอบ...">
-                <button onclick="sendMessage()">ส่งข้อความ (เข้ารหัสอัตโนมัติ)</button>
+                <button onclick="window.sendMessage()">ส่งข้อความ (เข้ารหัสอัตโนมัติ)</button>
             </div>
         </div>
     </div>
@@ -356,20 +355,19 @@
     <!-- Modal สำหรับ Hint -->
     <div id="hintModal" class="modal">
         <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('hintModal')">&times;</span>
+            <span class="close-btn" onclick="window.closeModal('hintModal')">&times;</span>
             <h2 id="hintModalTitle">คำใบ้ (Hint)</h2>
             <div id="hintModalBody" style="margin-top: 20px; font-size: 1.1em; line-height: 1.6;"></div>
         </div>
-    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/3.3.2/jsencrypt.min.js"></script>
     <script>
+    (function() {
         // ข้อมูล Keys
         const PRIVATE_KEY_A = `-----BEGIN RSA PRIVATE KEY-----
 MIIBVgIBADANBgkqhkiG9w0BAQEFAASCAUAwggE8AgEAAkEA8qYS7EEzj0fUuw8P
 07iSiPxYilR7YR/alLsEwGiZMjv5Vd5a9RW71NslIPGtel7LqwCS75a1dc+57XOH
 IYv2jwIDAQABAkAsIiiu7+0A0n/Oxh6K07dTUxKHlnYaZEDNbHagyGWUzRkQeJYf
-20Inw/G8uXPS6CZGoScZwXCqdRBgWCLAQE0BAiEA/J0qp3wCeuJTQM8OvzheiA2M
 rQXhs7m93SR+dIrdtrkCIQD15rZO9BAeLSjY90Xh9y1s4EzGELJgqbwRPktBfCfz
 hwIhAJLvOChDUY34p0RDK+i9+P5aI0Fg8m9/0pgW6hcPzvbBAiEA5eb7ghvLyfrc
 2uVtT9QCg22+Odw4egmXjOOaBrKmw5cCIQCZmTATaOa9JUxLsuQWvypdQKCSlZVB
@@ -383,7 +381,6 @@ MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAPKmEuxBM49H1LsPD9O4koj8WIpUe2Ef
 
         const PUBLIC_KEY_B = `-----BEGIN PUBLIC KEY-----
 MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAOGPL2PuAOwLPw4mRJUblK4R1hylRimS
-Aasz2d+7JEb3Bxi7TT0tXfkSK8czEVWd+9+MwyjHsT+svuUomB/OOBUCAwEAAQ==
 -----END PUBLIC KEY-----`;
 
         const PRIVATE_KEY_B = `-----BEGIN RSA PRIVATE KEY-----
@@ -413,16 +410,19 @@ HsG5mAMr3Jl6
                 const hours = Math.floor(timeLeft / 3600);
                 const minutes = Math.floor((timeLeft % 3600) / 60);
                 const seconds = timeLeft % 60;
-                timerElement.textContent = 
+                if(timerElement) timerElement.textContent = 
                     `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
             }
         }
-        setInterval(syncTimer, 1000);
+        // Clear old interval if exists
+        if(window.phase1SyncInterval) clearInterval(window.phase1SyncInterval);
+        window.phase1SyncInterval = setInterval(syncTimer, 1000);
         syncTimer();
 
-        function showHint1() {
+        // Expose functions to window for HTML onclick
+        window.showHint1 = function() {
             const timeElapsed = (typeof game !== 'undefined') ? (7200 - game.timeLeft) : 0;
-            const unlockTime = 60; // 1 minute (60 seconds)
+            const unlockTime = 60; // 1 minute
             
             const modalTitle = document.getElementById('hintModalTitle');
             const modalBody = document.getElementById('hintModalBody');
@@ -470,8 +470,7 @@ decrypt.setPrivateKey(\`วาง_Private_Key_A_ที่นี่\");</pre>
             document.getElementById('hintModal').style.display = 'flex';
         }
 
-        // ฟังก์ชันเปิดไฟล์
-        function openFile(type) {
+        window.openFile = function(type) {
             if (type === 'encrypted') {
                 document.getElementById('encryptedModal').style.display = 'flex';
             } else if (type === 'publicB') {
@@ -480,11 +479,11 @@ decrypt.setPrivateKey(\`วาง_Private_Key_A_ที่นี่\");</pre>
             }
         }
 
-        function closeModal(modalId) {
+        window.closeModal = function(modalId) {
             document.getElementById(modalId).style.display = 'none';
         }
 
-        function unlockFile() {
+        window.unlockFile = function() {
             const password = document.getElementById('filePassword').value;
             if (password === '1234') {
                 document.getElementById('fileContent').classList.remove('hidden');
@@ -496,15 +495,14 @@ decrypt.setPrivateKey(\`วาง_Private_Key_A_ที่นี่\");</pre>
             }
         }
 
-        function copyKey(elementId) {
+        window.copyKey = function(elementId) {
             const text = document.getElementById(elementId).textContent;
             navigator.clipboard.writeText(text).then(() => {
                 alert('📋 คัดลอก Key แล้ว!');
             });
         }
 
-        // ฟังก์ชันแชท
-        function openChat() {
+        window.openChat = function() {
             if (!fileUnlocked) {
                 alert('⚠️ คุณต้องปลดล็อกไฟล์ secret_key.enc ก่อน!');
                 return;
@@ -528,7 +526,6 @@ decrypt.setPrivateKey(\`วาง_Private_Key_A_ที่นี่\");</pre>
         }
 
         function sendEncryptedChallenge() {
-            // สร้างโจทย์คณิตศาสตร์
             const num1 = Math.floor(Math.random() * 50) + 10;
             const num2 = Math.floor(Math.random() * 50) + 10;
             currentQuestion = `${num1} + ${num2}`;
@@ -538,7 +535,6 @@ decrypt.setPrivateKey(\`วาง_Private_Key_A_ที่นี่\");</pre>
             console.log('📝 Plain Text โจทย์:', currentQuestion);
             console.log('✅ คำตอบที่ถูกต้อง:', correctAnswer);
 
-            // เข้ารหัสด้วย Public Key A
             const encrypt = new JSEncrypt();
             encrypt.setPublicKey(PUBLIC_KEY_A);
             const encrypted = encrypt.encrypt(currentQuestion);
@@ -548,7 +544,6 @@ decrypt.setPrivateKey(\`วาง_Private_Key_A_ที่นี่\");</pre>
 
             addMessage('received', `[ข้อความเข้ารหัส]\n${encrypted}`);
             
-            // ตั้งเวลาแสดงคำใบ้ในแชทถ้าไม่มีการตอบกลับภายใน 50 วินาที (แสดงแค่ครั้งเดียว)
             if (hintTimeout) clearTimeout(hintTimeout);
             
             if (!rsaHintShown) {
@@ -559,11 +554,10 @@ decrypt.setPrivateKey(\`วาง_Private_Key_A_ที่นี่\");</pre>
                         515
                     </div>`;
                     addMessage('received', hintMsg);
-                    rsaHintShown = true; // แสดงแล้วจะไม่แสดงอีก
+                    rsaHintShown = true;
                 }, 50000);
             }
 
-            // แสดงคำใบ้สั้นๆ
             setTimeout(() => {
                 addMessage('received', `💡 คำใบ้: ถอดรหัสด้วย Private Key A แล้วส่งคำตอบกลับมาแบบเข้ารหัสด้วย Public Key B`);
             }, 1000);
@@ -571,6 +565,7 @@ decrypt.setPrivateKey(\`วาง_Private_Key_A_ที่นี่\");</pre>
 
         function addMessage(type, text) {
             const chatWindow = document.getElementById('chatWindow');
+            if(!chatWindow) return;
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${type}`;
             
@@ -584,7 +579,7 @@ decrypt.setPrivateKey(\`วาง_Private_Key_A_ที่นี่\");</pre>
             chatWindow.scrollTop = chatWindow.scrollHeight;
         }
 
-        function sendMessage() {
+        window.sendMessage = function() {
             const input = document.getElementById('messageInput');
             const message = input.value.trim();
             
@@ -593,13 +588,11 @@ decrypt.setPrivateKey(\`วาง_Private_Key_A_ที่นี่\");</pre>
                 return;
             }
 
-            // ยกเลิกคำใบ้ถ้าผู้ใช้ตอบกลับทัน
             if (hintTimeout) clearTimeout(hintTimeout);
 
             console.log('=== ส่งคำตอบ ===');
             console.log('📝 Plain Text ที่ส่ง:', message);
 
-            // เข้ารหัสด้วย Public Key B
             const encrypt = new JSEncrypt();
             encrypt.setPublicKey(PUBLIC_KEY_B);
             const encrypted = encrypt.encrypt(message);
@@ -610,7 +603,6 @@ decrypt.setPrivateKey(\`วาง_Private_Key_A_ที่นี่\");</pre>
             addMessage('sent', `[ส่งข้อความเข้ารหัส]\n${encrypted}`);
             input.value = '';
 
-            // ตรวจสอบคำตอบ
             setTimeout(() => {
                 checkAnswer(message);
             }, 1000);
@@ -626,7 +618,6 @@ decrypt.setPrivateKey(\`วาง_Private_Key_A_ที่นี่\");</pre>
             if (answer === correctAnswer) {
                 addMessage('received', '✅ คำตอบถูกต้อง!');
                 setTimeout(() => {
-                    // ส่งข้อความลับ
                     sendSecretMessage();
                 }, 1500);
             } else {
@@ -640,7 +631,6 @@ decrypt.setPrivateKey(\`วาง_Private_Key_A_ที่นี่\");</pre>
             console.log('=== ส่งข้อความลับ ===');
             console.log('📝 Plain Text (ข้อความลับ):', secretPlaintext);
 
-            // เข้ารหัสด้วย Public Key A
             const encrypt = new JSEncrypt();
             encrypt.setPublicKey(PUBLIC_KEY_A);
             const encrypted = encrypt.encrypt(secretPlaintext);
@@ -680,15 +670,16 @@ decrypt.setPrivateKey(\`วาง_Private_Key_A_ที่นี่\");</pre>
             document.getElementById('stage1').classList.add('hidden');
             document.getElementById('stage2').classList.remove('hidden');
             
-            closeModal('chatModal');
+            window.closeModal('chatModal');
+            
+            if (typeof game !== 'undefined' && game.completeLevel) {
+                game.completeLevel();
+            }
         }
 
         // ปิด modal เมื่อคลิกข้างนอก
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.style.display = 'none';
-            }
-        }
+        // window.onclick removed to prevent conflict with global close button
+    })(); // End IIFE
     </script>
 </body>
 </html>
