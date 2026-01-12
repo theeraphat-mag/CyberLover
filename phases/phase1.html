@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SUT Bomb Defusal - CTF</title>
+    <title>SUT Bomb Defusal - CTF (Split View)</title>
     <style>
         * {
             margin: 0;
@@ -20,7 +20,7 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px; /* ขยายความกว้างเพื่อให้วางซ้ายขวาได้สวย */
             margin: 0 auto;
         }
 
@@ -30,48 +30,68 @@
             background: rgba(255, 0, 0, 0.1);
             border: 2px solid #ff0000;
             border-radius: 10px;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
         .header h1 {
             color: #ff0000;
             font-size: 2.5em;
-            margin-bottom: 10px;
             text-shadow: 0 0 10px #ff0000;
         }
 
         .timer {
-            font-size: 3em;
+            font-size: 2em;
             color: #ff0000;
             font-weight: bold;
-            margin: 20px 0;
             text-shadow: 0 0 20px #ff0000;
         }
 
-        .story {
+        /* --- Flex Layout สำหรับ Stage --- */
+        .stage-flex {
+            display: flex;
+            gap: 20px;
+            align-items: stretch; /* ให้ความสูงเท่ากัน */
+        }
+
+        /* Panel ซ้าย: ไฟล์และเนื้อเรื่อง */
+        .left-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Panel ขวา: แชท */
+        .right-panel {
+            flex: 1;
+            min-width: 400px; /* ความกว้างขั้นต่ำของแชท */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Responsive: จอเล็กให้เรียงลงมา */
+        @media (max-width: 900px) {
+            .stage-flex {
+                flex-direction: column;
+            }
+        }
+
+        .section-box {
             background: rgba(255, 255, 255, 0.05);
             padding: 20px;
             border-radius: 10px;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             border-left: 4px solid #00ff00;
+            height: 100%;
         }
 
-        .stage {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 30px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-
-        .stage h2 {
+        h2, h3 {
             color: #00ff00;
-            margin-bottom: 20px;
-            font-size: 1.8em;
+            margin-bottom: 15px;
         }
 
         .file-section {
             background: rgba(0, 0, 0, 0.3);
-            padding: 20px;
+            padding: 15px;
             border-radius: 8px;
             margin-bottom: 20px;
         }
@@ -90,25 +110,82 @@
 
         .file-item:hover {
             background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #00ff00;
         }
 
-        .file-icon {
-            font-size: 24px;
+        .file-icon { font-size: 24px; }
+
+        /* --- Chat Styles ปรับปรุงใหม่ --- */
+        .chat-container {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            height: 600px; /* Fix ความสูงของแชท */
         }
 
-        input[type="text"], input[type="password"], textarea {
+        .chat-window {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            padding-right: 10px;
+            border-bottom: 1px solid rgba(0,255,0,0.3);
+        }
+
+        .message {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            position: relative;
+            
+            /* Key CSS สำหรับป้องกันข้อความทะลุ */
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: break-all; /* ตัดคำเมื่อสุดบรรทัดสำหรับ Base64 ยาวๆ */
+            white-space: pre-wrap; /* รักษารูปแบบบรรทัด */
+            
+            /* Key CSS สำหรับการ Copy */
+            user-select: text; 
+            cursor: text;
+        }
+
+        .message.received {
+            background: rgba(0, 100, 255, 0.2);
+            border-left: 3px solid #0064ff;
+            margin-right: 20px;
+        }
+
+        .message.sent {
+            background: rgba(0, 255, 100, 0.2);
+            border-right: 3px solid #00ff64;
+            margin-left: 20px;
+            text-align: right;
+        }
+
+        .message-time {
+            font-size: 0.7em;
+            color: #aaa;
+            margin-top: 5px;
+            text-align: right;
+        }
+
+        /* Input Controls */
+        input[type="text"], input[type="password"] {
             width: 100%;
             padding: 12px;
-            background: rgba(0, 0, 0, 0.5);
+            background: #000;
             border: 1px solid #00ff00;
             border-radius: 5px;
-            color: #fff;
+            color: #00ff00;
             font-family: 'Courier New', monospace;
             margin-bottom: 10px;
         }
 
         button {
-            padding: 12px 24px;
+            padding: 10px 20px;
             background: #00ff00;
             color: #000;
             border: none;
@@ -121,62 +198,24 @@
 
         button:hover {
             background: #00cc00;
-            transform: scale(1.05);
+            transform: translateY(-2px);
         }
 
-        button:disabled {
-            background: #555;
-            cursor: not-allowed;
+        .hint-btn {
+            background: transparent !important;
+            color: #00ff00 !important;
+            border: 1px solid #00ff00 !important;
+            float: right;
         }
 
-        .chat-window {
-            background: rgba(0, 0, 0, 0.5);
-            border: 2px solid #00ff00;
-            border-radius: 10px;
-            padding: 20px;
-            max-height: 400px;
-            overflow-y: auto;
-            margin-bottom: 20px;
-        }
-
-        .message {
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 5px;
-            animation: fadeIn 0.5s;
-        }
-
-        .message.received {
-            background: rgba(0, 100, 255, 0.3);
-            margin-right: 50px;
-        }
-
-        .message.sent {
-            background: rgba(0, 255, 100, 0.3);
-            margin-left: 50px;
-            text-align: right;
-        }
-
-        .message-time {
-            font-size: 0.8em;
-            color: #aaa;
-            margin-top: 5px;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
+        /* Modal Styles (เหมือนเดิมแต่ตัด Chat Modal ออก) */
         .modal {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
             align-items: center;
             justify-content: center;
         }
@@ -186,10 +225,9 @@
             padding: 30px;
             border-radius: 10px;
             border: 2px solid #00ff00;
-            max-width: 600px;
+            max-width: 700px;
             width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
+            word-break: break-all;
         }
 
         .close-btn {
@@ -200,207 +238,161 @@
         }
 
         .key-display {
-            background: rgba(0, 0, 0, 0.5);
+            background: #000;
             padding: 15px;
-            border-radius: 5px;
+            border: 1px solid #333;
+            color: #0f0;
+            font-size: 0.8em;
+            max-height: 200px;
+            overflow-y: auto;
+            word-break: break-all;
             margin: 10px 0;
-            word-wrap: break-word;
-            font-size: 0.9em;
+            user-select: text; /* ให้ copy key ได้ง่าย */
         }
-
-        .success {
-            color: #00ff00;
-            font-weight: bold;
-        }
-
-        .error {
-            color: #ff0000;
-            font-weight: bold;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .hint-btn {
-            background: transparent !important;
-            color: #00ff00 !important;
-            border: 1px solid #00ff00 !important;
-            opacity: 0.5;
-            transition: all 0.3s ease;
-        }
-
-        .hint-btn:hover {
-            background: #00ff00 !important;
-            color: #000 !important;
-            opacity: 1;
-        }
-
-        .stage-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .stage-header h2 {
-            margin-bottom: 0 !important;
-        }
-
-        @keyframes blink {
-            0% { background-color: transparent; box-shadow: 0 0 5px #ffcc00; }
-            50% { background-color: #ffcc00; color: #000; box-shadow: 0 0 20px #ffcc00; }
-            100% { background-color: transparent; box-shadow: 0 0 5px #ffcc00; }
-        }
-
-        #hintModal .modal-content {
-            max-width: 800px;
-            width: 95%;
-            padding: 40px;
-        }
-
-        .main-close-btn {
-            position: fixed;
-            right: 30px;
-            top: 30px;
-            font-size: 40px;
-            cursor: pointer;
-            color: #ff0000;
-            background: rgba(0, 0, 0, 0.7);
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid #ff0000;
-            z-index: 1000;
-            transition: all 0.3s;
-        }
-
-        .main-close-btn:hover {
-            background: rgba(255, 0, 0, 0.2);
-            transform: scale(1.1);
-        }
+        
+        .hidden { display: none; }
     </style>
 </head>
 <body>
-<a href="#" id="exit-btn"
-   onclick="window.closeGameModal(); return false;"
-   style="position:fixed;top:24px;right:24px;z-index:9999;
-          text-decoration:none;background:#222;border-radius:50%;
-          width:48px;height:48px;display:flex;
-          align-items:center;justify-content:center;
-          border:2px solid #fff;">
-    <span style="font-size:2em;color:#fff;">&times;</span>
-</a>
-
-
-
 
     <div class="container">
         <div class="header">
-            <h1>🚨 SUT BOMB DEFUSAL 🚨</h1>
-            <div class="timer" id="timer">02:00:00</div>
-            <p>ระบบถูกล็อกด้วยกลไกความปลอดภัย 3 ชั้น</p>
+            <div class="timer">🚨 Phase 1: Communication Hack 🚨</div>
+            <h1 id="timer">00:00:00</h1>
         </div>
 
-        <div class="story">
-            <h3>📖 เรื่องราว</h3>
-            <p>ระเบิดถูกติดตั้งในอาคารหลักของ มทส. ระบบถูกล็อกด้วยกลไกความปลอดภัย 3 ชั้น หากไม่ปลดล็อกครบภายใน 2 ชั่วโมง ระเบิดจะทำงาน! คุณต้องแก้ CTF เพื่อปลดล็อกทีละด่าน</p>
-        </div>
-
-        <div class="stage" id="stage1">
-            <div class="stage-header">
-                <h2>🔐 ด่านที่ 1: Cryptography (RSA)</h2>
-                <button id="hintBtn" class="hint-btn" onclick="window.showHint1()"> คำใบ้</button>
-            </div>
-            <p style="margin-bottom: 20px;">คุณสามารถใช้คอมพิวเตอร์ของคนร้ายได้ ค้นหา Private Key และถอดรหัสข้อความลับ!</p>
+        <div id="stage1" class="stage-flex">
             
-            <div class="file-section">
-                <h3>📁 ไฟล์ในเครื่อง</h3>
-                <div class="file-item" onclick="window.openFile('encrypted')">
-                    <span class="file-icon">🔒</span>
-                    <span>secret_key.enc (ไฟล์เข้ารหัส)</span>
-                </div>
-                <div class="file-item" onclick="window.openFile('publicB')">
-                    <span class="file-icon">🔑</span>
-                    <span>public_key_B.pem</span>
+            <div class="left-panel">
+                <div class="section-box">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h2>🔐 ด่านที่ 1: RSA Interception</h2>
+                        <button class="hint-btn" onclick="window.showHint1()">💡 คำใบ้ / วิธีทำ</button>
+                    </div>
+                    
+                    <div style="margin: 20px 0;">
+                        <p><b>ภารกิจ:</b> สวมรอยเป็น "User A" เพื่อตอบคำถามของระบบ</p>
+                        <p style="margin-top: 10px; color: #aaa; font-size: 0.9em;">
+                            1. ค้นหา Private Key ของคุณ<br>
+                            2. ถอดรหัสโจทย์เลขที่ส่งมาในแชท<br>
+                            3. คำนวณคำตอบ<br>
+                            4. <u>เข้ารหัสคำตอบด้วยตัวเอง</u> (ใช้ Public Key B) แล้วส่งกลับไป
+                        </p>
+                    </div>
+
+                    <div class="file-section">
+                        <h3>📁 ไฟล์ในเครื่อง (คลิกเพื่อเปิด)</h3>
+                        <div class="file-item" onclick="window.openFile('encrypted')">
+                            <span class="file-icon">🔒</span>
+                            <div>
+                                <b>secret_key.enc</b><br>
+                                <small style="color:#888;">ไฟล์ Private Key ของคุณ (ติดรหัส)</small>
+                            </div>
+                        </div>
+                        <div class="file-item" onclick="window.openFile('publicB')">
+                            <span class="file-icon">🔑</span>
+                            <div>
+                                <b>public_key_B.pem</b><br>
+                                <small style="color:#888;">Key ของปลายทาง (ใช้สำหรับส่งคำตอบ)</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: rgba(255,0,0,0.1); padding: 10px; border-radius: 5px; font-size: 0.85em; border: 1px solid red;">
+                        ⚠️ <b>คำเตือน:</b> ช่องแชทด้านขวาเชื่อมต่อกับ Server โดยตรง คุณต้องส่งข้อความที่เข้ารหัสแล้ว (Ciphertext) เท่านั้น! ห้ามส่ง Plaintext
+                    </div>
                 </div>
             </div>
 
-            <div class="btn-group">
-                <button onclick="window.openChat()">💬 เปิดห้องแชท</button>
+            <div class="right-panel">
+                <div class="chat-container">
+                    <h3 style="border-bottom: 1px solid #00ff00; padding-bottom: 10px; margin-bottom: 10px;">💬 Secure Terminal</h3>
+                    
+                    <div class="chat-window" id="chatWindow">
+                        <div class="message received">
+                            <div>ระบบ: เชื่อมต่อสำเร็จ... กำลังรอการยืนยันตัวตน</div>
+                            <div class="message-time">System</div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label style="font-size: 0.8em; color: #00ff00;">วางข้อความที่เข้ารหัสแล้ว (Ciphertext) ที่นี่:</label>
+                        <input type="text" id="messageInput" placeholder="Ex: U2FsdGVkX1+..." autocomplete="off">
+                        <button onclick="window.sendMessage()" style="width: 100%;">🚀 ส่งข้อมูล (Send Data)</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="stage2" class="container hidden" style="text-align: center; margin-top: 50px;">
+            <div class="section-box" style="border-color: #00ff00; background: rgba(0,255,0,0.1);">
+                <h1 style="color: #00ff00; font-size: 3em;">🎉 MISSION COMPLETED 🎉</h1>
+                <p class="success" style="font-size: 1.5em; margin: 20px 0;">ถอดรหัสและกู้ระเบิดเฟส 1 สำเร็จ!</p>
+                <p>รหัสสำหรับด่านต่อไป:</p>
+                <div class="key-display" id="nextCode" style="font-size: 2em; text-align: center;"></div>
             </div>
         </div>
 
-        <div id="stage2" class="stage hidden">
-            <h2>✅ ด่านที่ 1: สำเร็จ!</h2>
-            <p class="success">คุณได้รับรหัสสำหรับด่านถัดไป:</p>
-            <div class="key-display" id="nextCode"></div>
-            <p style="margin-top: 20px;">นำรหัสนี้ไปใช้ในด่านต่อไป...</p>
-        </div>
     </div>
 
-    <!-- Modal สำหรับไฟล์เข้ารหัส -->
     <div id="encryptedModal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="window.closeModal('encryptedModal')">&times;</span>
             <h2>🔒 secret_key.enc</h2>
-            <p>ไฟล์นี้ถูกเข้ารหัสด้วยรหัสผ่าน</p>
-            <input type="password" id="filePassword" placeholder="ใส่รหัสผ่าน...">
-            <button onclick="window.unlockFile()">ปลดล็อก</button>
+            <p>กรุณาใส่รหัสผ่านเพื่อ Decrypt ไฟล์:</p>
+            <input type="password" id="filePassword" placeholder="Password...">
+            <button onclick="window.unlockFile()">Unlock</button>
+            
             <div id="fileContent" class="hidden" style="margin-top: 20px;">
-                <h3 class="success">✅ Private Key A (คุณ)</h3>
+                <h3 style="color: #00ff00;">✅ Private Key A (Decrypted)</h3>
+                <p style="font-size: 0.8em; color: #aaa;">ใช้ Key นี้ในการถอดรหัสข้อความที่ได้รับจากแชท</p>
                 <div class="key-display" id="privateKeyA"></div>
                 <button onclick="window.copyKey('privateKeyA')">📋 Copy Key</button>
             </div>
         </div>
     </div>
 
-    <!-- Modal สำหรับ Public Key B -->
     <div id="publicBModal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="window.closeModal('publicBModal')">&times;</span>
             <h2>🔑 Public Key B</h2>
+            <p style="font-size: 0.8em; color: #aaa;">ใช้ Key นี้ในการเข้ารหัส (Encrypt) คำตอบก่อนส่ง</p>
             <div class="key-display" id="publicKeyB"></div>
             <button onclick="window.copyKey('publicKeyB')">📋 Copy Key</button>
         </div>
     </div>
 
-    <!-- Modal สำหรับแชท -->
-    <div id="chatModal" class="modal">
+    <div id="hintModal" class="modal">
         <div class="modal-content">
-            <span class="close-btn" onclick="window.closeModal('chatModal')">&times;</span>
-            <h2>💬 ห้องแชทเข้ารหัส</h2>
-            <div class="chat-window" id="chatWindow"></div>
-            <div>
-                <label>ส่งข้อความ (Plain Text):</label>
-                <input type="text" id="messageInput" placeholder="พิมพ์คำตอบ...">
-                <button onclick="window.sendMessage()">ส่งข้อความ (เข้ารหัสอัตโนมัติ)</button>
+            <span class="close-btn" onclick="window.closeModal('hintModal')">&times;</span>
+            <h2>💡 Hacker's Guide (RSA)</h2>
+            <div id="hintModalBody" style="font-size: 0.9em; line-height: 1.6;">
+                <p>เนื่องจากหน้าเว็บไม่ทำการเข้ารหัสให้อัตโนมัติ คุณต้องใช้ <b>Console (F12)</b> หรือเว็บนอกในการทำ RSA</p>
+                <hr style="background: #333; margin: 15px 0;">
+                
+                <p><b>1. วิธีถอดรหัสโจทย์ (Decrypt) เพื่อดูคำถาม:</b></p>
+                <pre style="background: #000; color: #0f0; padding: 10px; border: 1px solid #333; overflow-x: auto;">
+var decrypt = new JSEncrypt();
+decrypt.setPrivateKey(`...วาง Private Key A ที่นี่...`);
+console.log(decrypt.decrypt("...วางข้อความจากแชท..."));</pre>
+                
+                <br>
+                <p><b>2. วิธีเข้ารหัสคำตอบ (Encrypt) เพื่อส่งกลับ:</b></p>
+                <pre style="background: #000; color: #0f0; padding: 10px; border: 1px solid #333; overflow-x: auto;">
+var encrypt = new JSEncrypt();
+encrypt.setPublicKey(`...วาง Public Key B ที่นี่...`);
+console.log(encrypt.encrypt("คำตอบที่เป็นตัวเลข"));</pre>
+                <p><i>*เมื่อได้ข้อความยาวๆ ให้ copy มาวางในช่องแชท</i></p>
             </div>
         </div>
     </div>
 
-    <!-- Modal สำหรับ Hint -->
-    <div id="hintModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="window.closeModal('hintModal')">&times;</span>
-            <h2 id="hintModalTitle">คำใบ้ (Hint)</h2>
-            <div id="hintModalBody" style="margin-top: 20px; font-size: 1.1em; line-height: 1.6;"></div>
-        </div>
-    </div>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/3.3.2/jsencrypt.min.js"></script>
+
     <script>
     (function() {
-        // ข้อมูล Keys
+        // --- Keys Setup ---
         const PRIVATE_KEY_A = `-----BEGIN RSA PRIVATE KEY-----
 MIIBVgIBADANBgkqhkiG9w0BAQEFAASCAUAwggE8AgEAAkEA8qYS7EEzj0fUuw8P
 07iSiPxYilR7YR/alLsEwGiZMjv5Vd5a9RW71NslIPGtel7LqwCS75a1dc+57XOH
@@ -434,81 +426,29 @@ HsG5mAMr3Jl6
 -----END RSA PRIVATE KEY-----`;
 
         let fileUnlocked = false;
-        let rsaHintReady = false;
-        let rsaHintShown = false;
         let chatInterval = null;
-        let hintTimeout = null;
         let currentQuestion = null;
         let correctAnswer = null;
+        let waitingForAnswer = false;
 
-        // เชื่อมต่อกับตัวจับเวลาหลักของเกม
+        // --- Timer Logic ---
         const timerElement = document.getElementById('timer');
-        function syncTimer() {
-            if (typeof game !== 'undefined' && game.timeLeft !== undefined) {
-                const timeLeft = game.timeLeft;
-                const hours = Math.floor(timeLeft / 3600);
-                const minutes = Math.floor((timeLeft % 3600) / 60);
-                const seconds = timeLeft % 60;
-                if(timerElement) timerElement.textContent = 
-                    `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-            }
+        let timeLeft = 7200; // 2 hours
+        
+        function updateTimer() {
+            timeLeft--;
+            if (timeLeft < 0) timeLeft = 0;
+            
+            const hours = Math.floor(timeLeft / 3600);
+            const minutes = Math.floor((timeLeft % 3600) / 60);
+            const seconds = timeLeft % 60;
+            timerElement.textContent = 
+                `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
         }
-        // Clear old interval if exists
-        if(window.phase1SyncInterval) clearInterval(window.phase1SyncInterval);
-        window.phase1SyncInterval = setInterval(syncTimer, 1000);
-        syncTimer();
+        setInterval(updateTimer, 1000);
 
-        // Expose functions to window for HTML onclick
-        window.showHint1 = function() {
-            const timeElapsed = (typeof game !== 'undefined') ? (7200 - game.timeLeft) : 0;
-            const unlockTime = 60; // 1 minute
-            
-            const modalTitle = document.getElementById('hintModalTitle');
-            const modalBody = document.getElementById('hintModalBody');
-            
-            if (rsaHintReady) {
-                modalTitle.textContent = "💡 เทคนิคการแก้โจทย์ RSA (Step-by-Step)";
-                modalTitle.style.color = "#00ff00";
-                modalBody.innerHTML = `
-                    <p>หากคุณไม่ทราบวิธีถอดรหัส RSA คุณสามารถใช้ <b>Console ของ Browser</b> ได้โดยตรง!</p>
-                    <hr style="margin: 15px 0; border: 1px solid #444;">
-                    <p><b>ขั้นตอนการถอดรหัส (Decrypt):</b></p>
-                    <ol style="margin-left: 20px; list-style-type: decimal;">
-                        <li>เปิด Console (กด F12 -> Console)</li>
-                        <li>ก๊อปปี้โค้ดนี้ไปวางและรันเพื่อสร้างตัวถอดรหัส:
-                            <pre style="background: #000; padding: 10px; border: 1px solid #333; color: #0f0; margin: 10px 0;">var decrypt = new JSEncrypt();
-decrypt.setPrivateKey(\`วาง_Private_Key_A_ที่นี่\");</pre>
-                        </li>
-                        <li>นำข้อความที่เข้ารหัสจากแชทมาใส่ในคำสั่งนี้:
-                            <pre style="background: #000; padding: 10px; border: 1px solid #333; color: #0f0; margin: 10px 0;">decrypt.decrypt("วางข้อความที่เข้ารหัสที่นี่");</pre>
-                        </li>
-                        <li>คุณจะได้โจทย์เลขออกมา (เช่น "20 + 30") ให้หาคำตอบ (ได้ 50)</li>
-                    </ol>
-                    <br>
-                    <p><b>ขั้นตอนการส่งคำตอบ (Encrypt):</b></p>
-                    <p>พิมพ์คำตอบในช่องแชทได้เลย ระบบจะเข้ารหัสด้วย Public Key B ให้อัตโนมัติ!</p>
-                `;
-            } else if (timeElapsed < unlockTime) {
-                const remaining = unlockTime - timeElapsed;
-                const m = Math.floor(remaining / 60);
-                const s = remaining % 60;
-                
-                modalTitle.textContent = "";
-                modalTitle.style.color = "#ffcc00"; 
-                modalBody.innerHTML = `<p style="text-align: center;">ระบบกำลังประมวลผลข้อมูล...<br><br>คำใบ้จะเปิดในอีก <span style="color: #ff0000; font-weight: bold; font-size: 1.2em;">${m} นาที ${s} วินาที</span></p>`;
-            } else {
-                modalTitle.textContent = "💡 คำใบ้ด่านที่ 1";
-                modalTitle.style.color = "#00ff00";
-                modalBody.innerHTML = `
-                    <ul style="margin-left: 20px; list-style-type: disc;">
-                        <li style="margin-bottom: 10px;">The first shall be last, and the last shall be first</li>
-                        <li style="margin-bottom: 10px;">GSV KZHHDLIW RH LMV GDL GSIVV ULFI</li> 
-                    </ul>`;
-            }
-            
-            document.getElementById('hintModal').style.display = 'flex';
-        }
-
+        // --- Functions Exposed to HTML ---
+        
         window.openFile = function(type) {
             if (type === 'encrypted') {
                 document.getElementById('encryptedModal').style.display = 'flex';
@@ -518,207 +458,131 @@ decrypt.setPrivateKey(\`วาง_Private_Key_A_ที่นี่\");</pre>
             }
         }
 
-        window.closeModal = function(modalId) {
-            document.getElementById(modalId).style.display = 'none';
+        window.closeModal = function(id) {
+            document.getElementById(id).style.display = 'none';
         }
 
         window.unlockFile = function() {
-            const password = document.getElementById('filePassword').value;
-            if (password === '1234') {
+            const pwd = document.getElementById('filePassword').value;
+            if (pwd === '1234') {
                 document.getElementById('fileContent').classList.remove('hidden');
                 document.getElementById('privateKeyA').textContent = PRIVATE_KEY_A;
                 fileUnlocked = true;
-                alert('✅ ปลดล็อกไฟล์สำเร็จ! คุณได้ Private Key A แล้ว');
+                
+                // Trigger Chat Event when file is unlocked
+                addMessage('received', '⚠️ ตรวจพบ Private Key! ระบบกำลังส่งข้อมูลลับ...');
+                setTimeout(sendEncryptedChallenge, 2000);
+                if(!chatInterval) chatInterval = setInterval(sendEncryptedChallenge, 45000);
+                
             } else {
-                alert('❌ รหัสผ่านไม่ถูกต้อง!');
+                alert('❌ Password Incorrect');
             }
         }
 
-        window.copyKey = function(elementId) {
-            const text = document.getElementById(elementId).textContent;
-            navigator.clipboard.writeText(text).then(() => {
-                alert('📋 คัดลอก Key แล้ว!');
-            });
+        window.copyKey = function(id) {
+            const text = document.getElementById(id).textContent;
+            navigator.clipboard.writeText(text).then(() => alert('Copied to clipboard!'));
         }
 
-        window.openChat = function() {
-            if (!fileUnlocked) {
-                alert('⚠️ คุณต้องปลดล็อกไฟล์ secret_key.enc ก่อน!');
-                return;
-            }
-            document.getElementById('chatModal').style.display = 'flex';
-            startChat();
+        window.showHint1 = function() {
+            document.getElementById('hintModal').style.display = 'flex';
         }
 
-        function startChat() {
-            if (chatInterval) return;
-            
-            addMessage('received', 'ระบบเชื่อมต่อ... กำลังรับข้อความเข้ารหัส');
-            
-            setTimeout(() => {
-                sendEncryptedChallenge();
-            }, 2000);
-
-            chatInterval = setInterval(() => {
-                sendEncryptedChallenge();
-            }, 60000); // ส่งทุก 1 นาที
-        }
-
-        function sendEncryptedChallenge() {
-            const num1 = Math.floor(Math.random() * 50) + 10;
-            const num2 = Math.floor(Math.random() * 50) + 10;
-            currentQuestion = `${num1} + ${num2}`;
-            correctAnswer = (num1 + num2).toString();
-
-            console.log('=== ส่งโจทย์ใหม่ ===');
-            console.log('📝 Plain Text โจทย์:', currentQuestion);
-            console.log('✅ คำตอบที่ถูกต้อง:', correctAnswer);
-
-            const encrypt = new JSEncrypt();
-            encrypt.setPublicKey(PUBLIC_KEY_A);
-            const encrypted = encrypt.encrypt(currentQuestion);
-
-            console.log('🔐 Encrypted (ด้วย Public Key A):', encrypted);
-            console.log('==================\n');
-
-            addMessage('received', `[ข้อความเข้ารหัส]\n${encrypted}`);
-            
-            if (hintTimeout) clearTimeout(hintTimeout);
-            
-            if (!rsaHintShown) {
-                hintTimeout = setTimeout(() => {
-                    const hintMsg = `<b>คำใบ้เพิ่มเติม:</b><br>
-                    <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; margin-top: 5px; font-size: 0.9em;">
-                        https://www.devglan.com/online-tools/rsa-encryption-decryption<br>
-                        515
-                    </div>`;
-                    addMessage('received', hintMsg);
-                    rsaHintShown = true;
-                }, 50000);
-            }
-
-            setTimeout(() => {
-                addMessage('received', `💡 คำใบ้: ถอดรหัสด้วย Private Key A แล้วส่งคำตอบกลับมาแบบเข้ารหัสด้วย Public Key B`);
-            }, 1000);
-        }
+        // --- Chat Logic ---
 
         function addMessage(type, text) {
             const chatWindow = document.getElementById('chatWindow');
-            if(!chatWindow) return;
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${type}`;
+            const div = document.createElement('div');
+            div.className = `message ${type}`;
             
             const time = new Date().toLocaleTimeString('th-TH');
-            messageDiv.innerHTML = `
-                <div>${text}</div>
-                <div class="message-time">${time}</div>
-            `;
+            div.innerHTML = `<div>${text}</div><div class="message-time">${time}</div>`;
             
-            chatWindow.appendChild(messageDiv);
+            chatWindow.appendChild(div);
             chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function sendEncryptedChallenge() {
+            if (!fileUnlocked) return; // Don't send if user hasn't unlocked key yet
+
+            const n1 = Math.floor(Math.random() * 50) + 10;
+            const n2 = Math.floor(Math.random() * 50) + 10;
+            correctAnswer = (n1 + n2).toString();
+            currentQuestion = `Calculate: ${n1} + ${n2}`;
+
+            console.log("--- DEBUG (Don't cheat!) ---");
+            console.log("Question:", currentQuestion);
+            console.log("Answer:", correctAnswer);
+
+            const encrypt = new JSEncrypt();
+            encrypt.setPublicKey(PUBLIC_KEY_A);
+            const encryptedMsg = encrypt.encrypt(currentQuestion);
+
+            addMessage('received', `[ENCRYPTED MESSAGE]\n${encryptedMsg}`);
+            waitingForAnswer = true;
         }
 
         window.sendMessage = function() {
             const input = document.getElementById('messageInput');
-            const message = input.value.trim();
-            
-            if (!message) {
-                alert('⚠️ กรุณาพิมพ์ข้อความ');
-                return;
-            }
+            const cipherText = input.value.trim();
 
-            if (hintTimeout) clearTimeout(hintTimeout);
+            if (!cipherText) return;
 
-            console.log('=== ส่งคำตอบ ===');
-            console.log('📝 Plain Text ที่ส่ง:', message);
-
-            const encrypt = new JSEncrypt();
-            encrypt.setPublicKey(PUBLIC_KEY_B);
-            const encrypted = encrypt.encrypt(message);
-
-            console.log('🔐 Encrypted (ด้วย Public Key B):', encrypted);
-            console.log('==================\n');
-
-            addMessage('sent', `[ส่งข้อความเข้ารหัส]\n${encrypted}`);
+            // 1. Display what user sent (Ciphertext)
+            addMessage('sent', cipherText);
             input.value = '';
 
+            // 2. Server Processing (Simulation)
             setTimeout(() => {
-                checkAnswer(message);
-            }, 1000);
+                if (!waitingForAnswer) {
+                    addMessage('received', 'ระบบ: ยังไม่มีคำถามใหม่ (กรุณารอสักครู่)');
+                    return;
+                }
+
+                // *** CRITICAL CHANGE: Decrypt user's input instead of encrypting it ***
+                // The user MUST have encrypted it with Public Key B.
+                // So the Server (us) uses Private Key B to read it.
+                
+                const serverDecrypt = new JSEncrypt();
+                serverDecrypt.setPrivateKey(PRIVATE_KEY_B);
+                
+                const decryptedContent = serverDecrypt.decrypt(cipherText);
+
+                if (decryptedContent === false || decryptedContent === null) {
+                    addMessage('received', '❌ ERROR: Server ไม่สามารถถอดรหัสข้อความได้! \n(คุณได้เข้ารหัสด้วย Public Key B หรือไม่? หรือส่ง Plaintext มา?)');
+                } else if (decryptedContent === correctAnswer) {
+                    addMessage('received', '✅ ACCESS GRANTED: คำตอบถูกต้อง!');
+                    clearInterval(chatInterval);
+                    setTimeout(sendFinalSecret, 2000);
+                } else {
+                    addMessage('received', `❌ REJECTED: คำตอบไม่ถูกต้อง (Server ถอดรหัสได้: "${decryptedContent}")`);
+                }
+            }, 800);
         }
 
-        function checkAnswer(answer) {
-            console.log('=== ตรวจสอบคำตอบ ===');
-            console.log('📝 คำตอบที่ได้รับ:', answer);
-            console.log('✅ คำตอบที่ถูกต้อง:', correctAnswer);
-            console.log('🎯 ผลลัพธ์:', answer === correctAnswer ? 'ถูกต้อง ✓' : 'ผิด ✗');
-            console.log('==================\n');
-
-            if (answer === correctAnswer) {
-                addMessage('received', '✅ คำตอบถูกต้อง!');
-                setTimeout(() => {
-                    sendSecretMessage();
-                }, 1500);
-            } else {
-                addMessage('received', '❌ คำตอบไม่ถูกต้อง ลองใหม่อีกครั้ง');
-            }
-        }
-
-        function sendSecretMessage() {
-            const secretPlaintext = "SUT-BOMB-SECRECT-2026";
-            
-            console.log('=== ส่งข้อความลับ ===');
-            console.log('📝 Plain Text (ข้อความลับ):', secretPlaintext);
-
+        function sendFinalSecret() {
+            const secret = "SUT-2026-FINAL-KEY";
             const encrypt = new JSEncrypt();
             encrypt.setPublicKey(PUBLIC_KEY_A);
-            const encrypted = encrypt.encrypt(secretPlaintext);
-
-            console.log('🔐 Encrypted (ด้วย Public Key A):', encrypted);
-            console.log('💡 ใช้ Private Key A ถอดรหัสข้อความนี้!');
-            console.log('==================\n');
-
-            addMessage('received', `🎯 ข้อความพิเศษ:\n${encrypted}`);
+            const encryptedSecret = encrypt.encrypt(secret);
             
+            addMessage('received', `🎉 ภารกิจสำเร็จ! นี่คือข้อความลับสุดท้ายของคุณ:\n${encryptedSecret}`);
+            
+            // Auto complete for demo purpose if they answer correctly
             setTimeout(() => {
-                addMessage('received', '💡 ถอดรหัสข้อความนี้เพื่อรับรหัสลับ!');
-                
-                setTimeout(() => {
-                    const hint = `คำใบ้: ข้อความที่ถอดรหัสได้คือ "${secretPlaintext}"`;
-                    addMessage('received', hint);
-                    
-                    setTimeout(() => {
-                        completeStage1();
-                    }, 3000);
-                }, 2000);
-            }, 1000);
+                const nextCode = "NjIwMi1URVJDRVMtQk1PQi1UVVM=";
+                document.getElementById('stage1').classList.add('hidden');
+                document.getElementById('stage2').classList.remove('hidden');
+                document.getElementById('nextCode').textContent = nextCode;
+
+                if (typeof game !== 'undefined' && game.completeLevel) {
+                    game.completeLevel();
+                }
+
+            }, 5000);
         }
 
-        function completeStage1() {
-            clearInterval(chatInterval);
-            const nextCode = "NjIwMi1URVJDRVMtQk1PQi1UVVM=";
-            
-            console.log('=== 🎉 ผ่านด่านที่ 1 ===');
-            console.log('🎁 รหัสสำหรับด่านต่อไป:', nextCode);
-            console.log('📝 Base64 Decoded:', atob(nextCode));
-            console.log('==================\n');
-
-            alert('🎉 ยินดีด้วย! คุณผ่านด่านที่ 1 แล้ว!\n\nรหัสสำหรับด่านต่อไป: ' + nextCode);
-            
-            document.getElementById('nextCode').textContent = nextCode;
-            document.getElementById('stage1').classList.add('hidden');
-            document.getElementById('stage2').classList.remove('hidden');
-            
-            window.closeModal('chatModal');
-            
-            if (typeof game !== 'undefined' && game.completeLevel) {
-                game.completeLevel();
-            }
-        }
-
-        // ปิด modal เมื่อคลิกข้างนอก
-        // window.onclick removed to prevent conflict with global close button
-    })(); // End IIFE
+    })();
     </script>
 </body>
 </html>
