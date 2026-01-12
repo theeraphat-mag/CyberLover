@@ -38,16 +38,9 @@
         
         #phase-modal {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 90%; max-width: 800px; max-height: 90vh;
+            width: 90%; max-width: 800px; max-height: 90vh; overflow-y: auto;
             background: #1a1a1a; border: 4px solid #fbbf24;
             box-shadow: 0 0 0 100vmax rgba(0,0,0,0.8); z-index: 100; padding: 20px; display: none;
-            display: none; /* Keep original display none behavior, will be overridden by JS */
-        }
-
-        #modal-scroll-container {
-            overflow-y: auto;
-            max-height: calc(90vh - 40px); /* Adjust for padding */
-            width: 100%;
         }
 
         #phase-modal::-webkit-scrollbar { width: 10px; }
@@ -90,10 +83,8 @@
 
     <canvas id="game-canvas" style="display:none;"></canvas>
 
-    <div id="phase-modal" style="display: none;">
-        <div id="modal-scroll-container">
-            <div id="modal-content"></div>
-        </div>
+    <div id="phase-modal">
+        <div id="modal-content"></div>
     </div>
 
     <div id="victory-screen">
