@@ -8,7 +8,7 @@
             height: 600,
             
             state: 'playing',
-            level: 1,
+            level: 4,
             
             // Assets
             mapImage: new Image(),
@@ -56,7 +56,7 @@
                 { id: 1, x: 418, y: 376, w: 296, h: 106, width: 296, height: 106, color: '#ef4444', active: true, label: 'PHASE 1: DIGI', icon: '📡' },
                 { id: 2, x: 2366, y: 333, w: 290, h: 83, width: 290, height: 150, color: '#fbbf24', active: false, label: 'PHASE 2: Forest', icon: '🌲' },
                 { id: 3, x: 801, y: 389, w: 290, h: 97, width: 290, height: 97, color: '#fbbf24', active: false, label: 'PHASE 3: LIBRARY', icon: '🏠' },
-                { id: 4, x: 1612, y: 977, w: 230, h: 437, width: 158, height: 76, color: '#a855f7', active: false, label: 'PHASE : Suranapa', icon: '🏫' }
+                { id: 4, x: 1534, y: 1464, w: 369, h: 103, width: 158, height: 76, color: '#a855f7', active: true, label: 'PHASE : Suranapa', icon: '🏫' }
             ],
             config: {
                 symmetricKey: "SUT-BOMB-SECRET-2026",
@@ -391,9 +391,60 @@
             },
             victory: function() {
                 this.state = 'victory';
-                document.getElementById('victory-screen').style.display = 'flex';
-                if (window.startConfetti) window.startConfetti();
                 clearInterval(this.timerInterval);
+
+                // Hide game elements
+                document.getElementById('game-canvas').style.display = 'none';
+                document.getElementById('mission-hud').style.display = 'none';
+                document.getElementById('timer-hud').style.display = 'none';
+
+                const victoryScreen = document.getElementById('victory-screen');
+                
+                fetch('phases/victory.html')
+                    .then(response => response.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        
+                        // Extract and inject styles from victory.html
+                        const styleTags = doc.head.querySelectorAll('style');
+                        styleTags.forEach(oldStyle => {
+                            const newStyle = document.createElement('style');
+                            newStyle.textContent = oldStyle.textContent;
+                            document.head.appendChild(newStyle);
+                        });
+
+                        // Clear the existing victory screen and inject new content from body
+                        victoryScreen.innerHTML = '';
+                        // Move all children from the fetched body to the victory screen
+                        const victoryBody = doc.body;
+                        while (victoryBody.firstChild) {
+                            victoryScreen.appendChild(victoryBody.firstChild);
+                        }
+
+                        // Make the victory screen visible
+                        victoryScreen.style.display = 'block'; 
+                        victoryScreen.style.inset = '0';
+                        victoryScreen.style.position = 'fixed';
+
+                        // Find and execute scripts from the fetched content
+                        Array.from(victoryScreen.querySelectorAll("script")).forEach( oldScript => {
+                            const newScript = document.createElement("script");
+                            Array.from(oldScript.attributes)
+                              .forEach( attr => newScript.setAttribute(attr.name, attr.value) );
+                            newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                            // Append to document.body to ensure execution after all elements are in place
+                            document.body.appendChild(newScript);
+                            oldScript.remove(); // Remove the original script tag from the injected content
+                        });
+
+                    })
+                    .catch(err => {
+                        console.error('Failed to load victory screen:', err);
+                        // Fallback to original simple victory screen
+                        victoryScreen.innerHTML = `<h1>MISSION COMPLETE</h1><p>FLAG: SUT{CPE_RPG_HERO_2026}</p>`;
+                        victoryScreen.style.display = 'flex';
+                    });
             },
             attachPhaseLogic: function(levelId) {
                 window.app = {
