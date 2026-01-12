@@ -1,57 +1,252 @@
-<section id="phase2" class="terminal-box p-6 rounded-lg border-yellow-900 animate-fade-in">
-    <h2 class="text-lg font-bold mb-8 flex items-center text-yellow-500">
-        <span class="mr-2">🔐</span> Phase 2: Entity Authentication (3-Locks)
-    </h2>
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUT Phase 2 - The Reflection</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Courier New', monospace;
+            background: #022c22; /* Dark Green bg */
+            color: #10b981;
+            padding: 20px;
+            overflow-y: auto;
+        }
 
-    <div id="lock1-box" class="mb-10 p-6 bg-zinc-950/50 border border-zinc-800 rounded-lg">
-        <div class="flex flex-col md:flex-row gap-6 items-center">
-            <div class="text-4xl" id="icon1">🔒</div>
-            <div class="flex-1 w-full">
-                <label class="block text-[10px] text-gray-500 uppercase mb-2">Lock 1: Input Symmetric Key (จากด่าน 1)</label>
-                <input type="text" id="lock1-input" placeholder="วางกุญแจลับที่นี่..." class="w-full bg-black border border-zinc-800 p-3 text-sm text-green-400 focus:outline-none focus:border-green-500">
-            </div>
-            <button onclick="app.unlock1()" id="btn-lock1" class="btn-military px-8 py-3">Sync Token</button>
+        .container { max-width: 800px; margin: 0 auto; text-align: center; }
+
+        .header {
+            border-bottom: 2px solid #10b981;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+        }
+
+        .timer { font-size: 1.5em; color: #ef4444; margin-top: 5px; }
+
+        .artifact-box {
+            background: rgba(0,0,0,0.5);
+            border: 1px dashed #fbbf24;
+            padding: 20px;
+            margin: 20px 0;
+            color: #fbbf24;
+        }
+
+        .tool-box {
+            background: #000;
+            border: 2px solid #10b981;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+        }
+
+        input {
+            background: #111;
+            border: 1px solid #333;
+            color: #fff;
+            padding: 10px;
+            width: 80%;
+            font-family: inherit;
+            font-size: 1.2em;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        button {
+            background: #10b981;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1em;
+        }
+        button:hover { background: #34d399; }
+
+        .mirror-display {
+            font-size: 1.5em;
+            letter-spacing: 2px;
+            margin: 20px 0;
+            min-height: 40px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 0 10px #fff;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.9);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 999;
+        }
+        .modal-msg {
+            background: #1a1a1a;
+            border: 2px solid #ef4444;
+            padding: 30px;
+            max-width: 500px;
+            text-align: center;
+            color: #fff;
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.5);
+        }
+        .blink { animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        .success-box {
+            display: none;
+            background: rgba(16, 185, 129, 0.2);
+            border: 2px solid #10b981;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .main-close-btn {
+            position: fixed;
+            right: 30px;
+            top: 30px;
+            font-size: 40px;
+            cursor: pointer;
+            color: #10b981;
+            background: rgba(0, 0, 0, 0.7);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #10b981;
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+
+        .main-close-btn:hover {
+            background: rgba(16, 185, 129, 0.2);
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+
+
+
+
+
+
+    <!-- Intro Modal -->
+    <div id="introModal" class="modal-overlay">
+        <div class="modal-msg">
+            <h2 style="color: #ef4444;">⚠ INCOMING MESSAGE ⚠</h2>
+            <p style="margin: 20px 0; line-height: 1.6;">
+                "สายลับของเราแจ้งว่ารหัสถูกซ่อนอยู่ใน <b>NextCode</b> ที่คุณได้มาจากด่านที่แล้ว...<br>
+                แต่มันถูกเข้ารหัสและ <b>'กลับด้าน'</b> อยู่"<br><br>
+                จงใช้เครื่องมือ <b>Digital Mirror</b> เพื่ออ่านข้อความที่แท้จริง!
+            </p>
+            <button onclick="document.getElementById('introModal').style.display='none'">รับทราบ</button>
         </div>
     </div>
 
-    <div id="otp-tool" class="hidden mb-10 p-6 border border-green-600 bg-green-950/20 rounded-lg flex flex-col md:flex-row justify-between items-center">
-        <div class="mb-4 md:mb-0">
-            <p class="text-[10px] text-green-500 font-bold uppercase tracking-widest mb-1">Squad Handheld Token [SYNCED]</p>
+    <div class="container">
+        <div class="header">
+            <h1>🌲 PHASE 2: FOREST MIRROR</h1>
+            <div class="timer" id="phase2-timer">00:00:00</div>
         </div>
-        <div class="flex items-center gap-8">
-            <div class="text-right">
-                <div id="live-otp" class="text-4xl font-bold text-white tracking-[0.2em] font-mono">000000</div>
-                <div class="w-full bg-zinc-800 mt-2 h-[2px]">
-                    <div id="otp-progress" class="bg-green-500 h-full transition-all duration-1000" style="width: 100%"></div>
-                </div>
+
+        <div class="artifact-box">
+            <p>📁 ARTIFICIAL CODE FOUND:</p>
+            <h2 id="artifact-code" style="word-break: break-all;">NjIwMi1URVJDRVMtQk1PQi1UVVM=</h2>
+            <p style="font-size: 0.8em; color: #aaa; margin-top:5px;">(Hint: Base64 Decode this first)</p>
+        </div>
+
+        <div class="tool-box">
+            <h3>🪞 DIGITAL MIRROR DEVICE 🪞</h3>
+            <p style="font-size: 0.8em; color: #888; margin-bottom: 15px;">วางข้อความที่ถอดรหัสแล้วที่นี่ เพื่อสะท้อนหาความจริง</p>
+            
+            <input type="text" id="mirror-input" placeholder="Paste Decoded Text Here...">
+            <br>
+            <button onclick="activateMirror()">🔄 ACTIVATE REFLECTION</button>
+
+            <div class="mirror-display" id="mirror-result">
+                [ WAITING FOR INPUT ]
             </div>
+        </div>
+
+        <div style="margin-top: 40px;">
+            <h3>🔐 FINAL AUTHENTICATION</h3>
+            <p>กรอกรหัสผ่านที่ถูกต้องเพื่อปลดล็อก Forest Gate</p>
+            <input type="text" id="final-pass" placeholder="Enter Secret Code...">
+            <button onclick="checkFinalPass()">CONFIRM</button>
+        </div>
+
+        <div id="success-area" class="success-box">
+            <h2>✅ ACCESS GRANTED</h2>
+            <p>ระบบรักษาความปลอดภัยป่าถูกปิดแล้ว</p>
+            <button onclick="finishLevel()" style="margin-top: 10px; background: #fff; color: #000;">เดินทางต่อ (Next Level)</button>
         </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <!-- Lock 2: TOTP -->
-        <div id="lock2-card" class="locked lock-card bg-zinc-950 p-6 rounded-lg flex flex-col items-center">
-            <div class="text-3xl mb-4" id="icon2">🔒</div>
-            <p class="text-[10px] text-gray-500 uppercase mb-4 text-center">Lock 2: TOTP (One-Time Password)</p>
-            <input type="text" id="otp-input" maxlength="6" placeholder="------" class="w-full bg-black border border-zinc-800 p-2 text-center text-2xl tracking-[0.3em] text-white focus:outline-none mb-4">
-            <button onclick="app.unlock2()" id="btn-lock2" class="btn-military w-full py-2">Verify OTP</button>
-        </div>
+    <script>
+    (function() {
+        // Sync Timer
+        function syncPhase2Timer() {
+            const timerEl = document.getElementById('phase2-timer');
+            if (typeof game !== 'undefined' && game.timeLeft !== undefined) {
+                const timeLeft = game.timeLeft;
+                const h = Math.floor(timeLeft / 3600).toString().padStart(2, '0');
+                const m = Math.floor((timeLeft % 3600) / 60).toString().padStart(2, '0');
+                const s = (timeLeft % 60).toString().padStart(2, '0');
+                if(timerEl) timerEl.textContent = `${h}:${m}:${s}`;
+            }
+        }
+        
+        if(window.phase2SyncInterval) clearInterval(window.phase2SyncInterval);
+        window.phase2SyncInterval = setInterval(syncPhase2Timer, 1000);
+        syncPhase2Timer();
 
-        <!-- Lock 3: Location -->
-        <div id="lock3-card" class="locked lock-card bg-zinc-950 p-6 rounded-lg flex flex-col items-center">
-            <div class="text-3xl mb-4" id="icon3">🔒</div>
-            <p class="text-[10px] text-gray-500 uppercase mb-4 tracking-widest text-center">Lock 3: Location-based Auth</p>
-            <input type="text" id="loc-input" placeholder="BuildingID+Floor" class="w-full bg-black border border-zinc-800 p-2 text-center text-sm text-white focus:outline-none focus:border-yellow-500 mb-4 uppercase">
+        // Mirror Function Logic
+        window.activateMirror = function() {
+            const input = document.getElementById('mirror-input').value;
+            if(!input) return;
 
-            <div id="loc-hint" class="hidden text-[10px] text-blue-400 text-left w-full mb-4 bg-blue-900/10 p-3 border border-blue-900/30 leading-relaxed">
-                <span class="font-bold underline uppercase text-blue-300">GPS Intel Received:</span><br>
-                "ตรวจพบพิกัดที่ Lat: 14.8818, Long: 102.0211... ตรวจสอบชื่อตึกบริหาร มทส. (ใส่รหัสตึก+ชั้นสูงสุด)"
-            </div>
-            <button onclick="app.unlock3()" id="btn-lock3" class="btn-military w-full py-2">Verify Location</button>
-        </div>
-    </div>
+            // Effect: Show processing
+            const display = document.getElementById('mirror-result');
+            display.style.color = "#fbbf24";
+            display.innerText = "REFLECTING...";
 
-    <button id="p3-next" onclick="app.navToPhase3()" class="hidden w-full mt-12 py-4 bg-yellow-600 text-black font-bold uppercase text-sm hover:bg-yellow-400 transition-all shadow-lg">
-        Enter Disarm Console (Phase 3)
-    </button>
-</section>
+            setTimeout(() => {
+                // Reverse the string
+                const reversed = input.split('').reverse().join('');
+                display.style.color = "#fff";
+                display.innerText = reversed;
+
+                // Check if they put the exact correct Base64 decoded string
+                if (reversed === "SUT-BOMB-SECRET-2026") {
+                    display.style.color = "#4ade80"; // Green
+                    display.innerText = "✨ " + reversed + " ✨";
+                    // Auto fill for convenience (optional, but good UX)
+                    // document.getElementById('final-pass').value = reversed;
+                }
+            }, 800);
+        }
+
+        // Final Check
+        window.checkFinalPass = function() {
+            const pass = document.getElementById('final-pass').value.trim();
+            if (pass === "SUT-BOMB-SECRET-2026") {
+                document.getElementById('success-area').style.display = 'block';
+                window.scrollTo(0, document.body.scrollHeight);
+            } else {
+                alert("❌ ACCESS DENIED: รหัสผ่านไม่ถูกต้อง");
+            }
+        }
+
+        window.finishLevel = function() {
+            if (typeof game !== 'undefined' && game.completeLevel) {
+                game.completeLevel();
+            }
+        }
+    })();
+    </script>
+</body>
+</html>

@@ -54,8 +54,9 @@
             // Set these using coordinates from map_tool.html
             checkpoints: [
                 { id: 1, x: 418, y: 376, w: 296, h: 106, width: 296, height: 106, color: '#ef4444', active: true, label: 'PHASE 1: DIGI', icon: '📡' },
-                { id: 2, x: 801, y: 389, w: 290, h: 97, width: 290, height: 97, color: '#fbbf24', active: false, label: 'PHASE 2: LIBRARY', icon: '🏠' },
-                { id: 3, x: 544, y: 518, w: 158, h: 76, width: 158, height: 76, color: '#a855f7', active: false, label: 'PHASE 3: F10 ADMIN', icon: '🏫' }
+                { id: 2, x: 2326, y: 389, w: 290, h: 150, width: 290, height: 150, color: '#fbbf24', active: false, label: 'PHASE 2: Forest', icon: '🌲' },
+                { id: 3, x: 801, y: 389, w: 290, h: 97, width: 290, height: 97, color: '#fbbf24', active: false, label: 'PHASE 3: LIBRARY', icon: '🏠' },
+                { id: 4, x: 544, y: 518, w: 158, h: 76, width: 158, height: 76, color: '#a855f7', active: false, label: 'PHASE : F10 ADMIN', icon: '🏫' }
             ],
 
             config: {
@@ -70,6 +71,10 @@
             explosionStartTime: 0,
 
             init: function() {
+                // Expose global functions for HTML access
+                window.closeGameModal = globalCloseModal; // Use the robust global function
+                window.game = this; // Ensure 'game' is globally accessible
+
                 this.ctx = this.canvas.getContext('2d');
                 this.resize();
                 window.addEventListener('resize', () => this.resize());
@@ -316,13 +321,23 @@
                 }
 
                 this.ctx.restore(); // Restore camera transform
+
+                // Update Coordinates HTML
+                const xEl = document.getElementById('player-x');
+                const yEl = document.getElementById('player-y');
+                if(xEl && yEl) {
+                    xEl.innerText = Math.round(this.player.x);
+                    yEl.innerText = Math.round(this.player.y);
+                }
             },
 
             gameLoop: function() {
+                if (this.state === 'menu') return;
                 this.update();
                 this.draw();
                 requestAnimationFrame(() => this.gameLoop());
             },
+
 
             checkRectCollision: function(r1, r2) {
                 return (r1.x < r2.x + r2.w && r1.x + r1.w > r2.x && r1.y < r2.y + r2.h && r1.y + r1.h > r2.y);
@@ -348,7 +363,10 @@
                     this.attachPhaseLogic(id);
                 });
             },
-            closeModal: function() { document.getElementById('phase-modal').style.display = 'none'; this.state = 'playing'; },
+            closeModal: function() { 
+                document.getElementById('phase-modal').style.display = 'none'; 
+                this.state = 'playing'; 
+            },
             completeLevel: function() {
                 // Ensure chat intervals are cleared if they exist from phase 1
                 if (window.chatInterval) clearInterval(window.chatInterval);
@@ -357,8 +375,7 @@
                 this.level++;
                 if (this.level <= this.checkpoints.length) {
                     this.checkpoints[this.level - 1].active = true;
-                    const objectives = ["", "Dorms Reached. Move to Building F10.", "Security Overridden. Enter the Core."];
-                    document.getElementById('objective-text').innerText = objectives[this.level - 1];
+                    // Objectives removed from HUD
                 } else { this.victory(); }
             },
             triggerExplosions: function() {
@@ -376,6 +393,7 @@
             victory: function() {
                 this.state = 'victory';
                 document.getElementById('victory-screen').style.display = 'flex';
+                if (window.startConfetti) window.startConfetti();
                 clearInterval(this.timerInterval);
             },
             attachPhaseLogic: function(levelId) {
@@ -430,5 +448,44 @@
                         document.getElementById('otp-progress').style.width = ((60 - (now % 60)) / 60) * 100 + "%";
                     }
                 }, 1000);
-            }
+            },
+           exitGame: function () {
+            console.log("Exit Game → Back to Start");
+
+            this.state = 'menu';
+
+            if (this.timerInterval) clearInterval(this.timerInterval);
+            if (this.otpInterval) clearInterval(this.otpInterval);
+
+            this.timerInterval = null;
+            this.otpInterval = null;
+
+            this.timeLeft = 7200;
+            this.level = 1;
+
+            this.checkpoints.forEach((cp, i) => cp.active = (i === 0));
+
+            // ซ่อน UI เกม
+            ['phase-modal','game-canvas','mission-hud','timer-hud']
+                .forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.style.display = 'none';
+                });
+
+            // ✅ กลับ start screen
+            const startScreen = document.getElementById('start-screen');
+            if (startScreen) startScreen.style.display = 'flex';
+
+            // reset camera (กันภาพค้าง)
+            this.camera.x = 0;
+            this.camera.y = 0;
+        }
+
         };
+
+        function globalCloseModal() {
+            if (typeof game !== 'undefined') {
+                game.exitGame();
+            }
+        }
+       
