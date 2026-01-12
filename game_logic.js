@@ -53,8 +53,9 @@
             // Set these using coordinates from map_tool.html
             checkpoints: [
                 { id: 1, x: 418, y: 376, w: 296, h: 106, width: 296, height: 106, color: '#ef4444', active: true, label: 'PHASE 1: DIGI', icon: '📡' },
-                { id: 2, x: 801, y: 389, w: 290, h: 97, width: 290, height: 97, color: '#fbbf24', active: false, label: 'PHASE 2: LIBRARY', icon: '🏠' },
-                { id: 3, x: 544, y: 518, w: 158, h: 76, width: 158, height: 76, color: '#a855f7', active: false, label: 'PHASE 3: F10 ADMIN', icon: '🏫' }
+                { id: 2, x: 2326, y: 389, w: 290, color: '#fbbf24', active: false, label: 'PHASE 2: Forest', icon: '🌲' },
+                { id: 3, x: 801, y: 389, w: 290, h: 97, width: 290, height: 97, color: '#fbbf24', active: false, label: 'PHASE 3: LIBRARY', icon: '🏠' },
+                { id: 4, x: 544, y: 518, w: 158, h: 76, width: 158, height: 76, color: '#a855f7', active: false, label: 'PHASE : F10 ADMIN', icon: '🏫' }
             ],
 
             config: {
@@ -68,6 +69,10 @@
             currentOTP: null,
 
             init: function() {
+                // Expose global functions for HTML access
+                window.closeGameModal = globalCloseModal; // Use the robust global function
+                window.game = this; // Ensure 'game' is globally accessible
+
                 this.ctx = this.canvas.getContext('2d');
                 this.resize();
                 window.addEventListener('resize', () => this.resize());
@@ -297,6 +302,14 @@
                 this.ctx.restore(); // Restore player transform
 
                 this.ctx.restore(); // Restore camera transform
+
+                // Update Coordinates HTML
+                const xEl = document.getElementById('player-x');
+                const yEl = document.getElementById('player-y');
+                if(xEl && yEl) {
+                    xEl.innerText = Math.round(this.player.x);
+                    yEl.innerText = Math.round(this.player.y);
+                }
             },
 
             gameLoop: function() {
@@ -329,7 +342,10 @@
                     this.attachPhaseLogic(id);
                 });
             },
-            closeModal: function() { document.getElementById('phase-modal').style.display = 'none'; this.state = 'playing'; },
+            closeModal: function() { 
+                document.getElementById('phase-modal').style.display = 'none'; 
+                this.state = 'playing'; 
+            },
             completeLevel: function() {
                 // Ensure chat intervals are cleared if they exist from phase 1
                 if (window.chatInterval) clearInterval(window.chatInterval);
@@ -338,8 +354,7 @@
                 this.level++;
                 if (this.level <= this.checkpoints.length) {
                     this.checkpoints[this.level - 1].active = true;
-                    const objectives = ["", "Dorms Reached. Move to Building F10.", "Security Overridden. Enter the Core."];
-                    document.getElementById('objective-text').innerText = objectives[this.level - 1];
+                    // Objectives removed from HUD
                 } else { this.victory(); }
             },
             gameOver: function() {
@@ -405,3 +420,9 @@
                 }, 1000);
             }
         };
+
+        function globalCloseModal() {
+            const modal = document.getElementById('phase-modal');
+            if (modal) modal.style.display = 'none';
+            if (typeof game !== 'undefined') game.state = 'playing';
+        }
