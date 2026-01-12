@@ -53,7 +53,7 @@
             // Set these using coordinates from map_tool.html
             checkpoints: [
                 { id: 1, x: 418, y: 376, w: 296, h: 106, width: 296, height: 106, color: '#ef4444', active: true, label: 'PHASE 1: DIGI', icon: '📡' },
-                { id: 2, x: 2326, y: 389, w: 290, color: '#fbbf24', active: false, label: 'PHASE 2: Forest', icon: '🌲' },
+                { id: 2, x: 2326, y: 389, w: 290, h: 150, width: 290, height: 150, color: '#fbbf24', active: false, label: 'PHASE 2: Forest', icon: '🌲' },
                 { id: 3, x: 801, y: 389, w: 290, h: 97, width: 290, height: 97, color: '#fbbf24', active: false, label: 'PHASE 3: LIBRARY', icon: '🏠' },
                 { id: 4, x: 544, y: 518, w: 158, h: 76, width: 158, height: 76, color: '#a855f7', active: false, label: 'PHASE : F10 ADMIN', icon: '🏫' }
             ],
@@ -312,10 +312,12 @@
             },
 
             gameLoop: function() {
+                if (this.state === 'menu') return;
                 this.update();
                 this.draw();
                 requestAnimationFrame(() => this.gameLoop());
             },
+
 
             checkRectCollision: function(r1, r2) {
                 return (r1.x < r2.x + r2.w && r1.x + r1.w > r2.x && r1.y < r2.y + r2.h && r1.y + r1.h > r2.y);
@@ -363,6 +365,7 @@
             victory: function() {
                 this.state = 'victory';
                 document.getElementById('victory-screen').style.display = 'flex';
+                if (window.startConfetti) window.startConfetti();
                 clearInterval(this.timerInterval);
             },
             attachPhaseLogic: function(levelId) {
@@ -423,43 +426,33 @@
 
             this.state = 'menu';
 
-            if (this.timerInterval) {
-                clearInterval(this.timerInterval);
-                this.timerInterval = null;
-            }
+            if (this.timerInterval) clearInterval(this.timerInterval);
+            if (this.otpInterval) clearInterval(this.otpInterval);
 
-            if (this.otpInterval) {
-                clearInterval(this.otpInterval);
-                this.otpInterval = null;
-            }
+            this.timerInterval = null;
+            this.otpInterval = null;
 
             this.timeLeft = 7200;
             this.level = 1;
 
-            if (this.checkpoints) {
-                this.checkpoints.forEach((cp, i) => cp.active = (i === 0));
-            }
+            this.checkpoints.forEach((cp, i) => cp.active = (i === 0));
 
-            if (this.player) {
-                this.player.x = this.worldWidth / 2;
-                this.player.y = this.worldHeight / 2;
-            }
+            // ซ่อน UI เกม
+            ['phase-modal','game-canvas','mission-hud','timer-hud']
+                .forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.style.display = 'none';
+                });
 
-            // ✅ helper ปลอดภัย
-            const hide = (id) => {
-                const el = document.getElementById(id);
-                if (el) el.style.display = 'none';
-            };
+            // ✅ กลับ start screen
+            const startScreen = document.getElementById('start-screen');
+            if (startScreen) startScreen.style.display = 'flex';
 
-            hide('phase-modal');
-            hide('game-canvas');
-            hide('coordinates-hud');
-            hide('timer-hud');
-
-            if (typeof startGame === 'function') {
-                startGame();
-            }
+            // reset camera (กันภาพค้าง)
+            this.camera.x = 0;
+            this.camera.y = 0;
         }
+
         };
 
         function globalCloseModal() {
