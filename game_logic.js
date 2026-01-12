@@ -13,6 +13,7 @@
             // Assets
             mapImage: new Image(),
             playerSprite: new Image(),
+            explosionImage: new Image(),
             assetsLoaded: 0,
 
             // World
@@ -67,6 +68,7 @@
             timerInterval: null,
             otpInterval: null,
             currentOTP: null,
+            explosionStartTime: 0,
 
             init: function() {
                 // Expose global functions for HTML access
@@ -84,6 +86,8 @@
                 window.addEventListener('keyup', e => this.keys[e.key] = false);
 
                 this.mapImage.src = 'sut_map.png'; 
+                this.playerSprite.src = 'https://i.imgur.com/f2a1p7I.png'; 
+                this.explosionImage.src = 'explosion_effect.png';
                 
                 this.mapImage.onload = () => {
                     this.assetsLoaded++;
@@ -105,6 +109,7 @@
                 };
                 
                 this.playerSprite.onload = () => this.assetsLoaded++;
+                this.explosionImage.onload = () => this.assetsLoaded++;
 
                 this.startTimer();
                 this.gameLoop();
@@ -119,7 +124,7 @@
             startTimer: function() {
                 this.timerInterval = setInterval(() => {
                     if (this.state !== 'playing' && this.state !== 'paused') return;
-                    if (this.timeLeft <= 0) { this.gameOver(); return; }
+                    if (this.timeLeft <= 0) { this.triggerExplosions(); return; }
                     this.timeLeft--;
                     const h = Math.floor(this.timeLeft / 3600).toString().padStart(2, '0');
                     const m = Math.floor((this.timeLeft % 3600) / 60).toString().padStart(2, '0');
@@ -300,6 +305,21 @@
 
                 this.ctx.restore(); // Restore player transform
 
+                if (this.state === 'exploding') {
+                     const elapsed = Date.now() - this.explosionStartTime;
+                     const duration = 2000;
+                     const t = Math.min(elapsed / duration, 1);
+                     const scale = 1 - Math.pow(1 - t, 3); // Ease out cubic
+
+                     this.obstacles.forEach(obs => {
+                         const maxSize = Math.max(obs.w, obs.h) * 1.5;
+                         const currentSize = maxSize * scale;
+                         const cx = obs.x + obs.w / 2 - currentSize / 2;
+                         const cy = obs.y + obs.h / 2 - currentSize / 2;
+                         this.ctx.drawImage(this.explosionImage, cx, cy, currentSize, currentSize);
+                     });
+                }
+
                 this.ctx.restore(); // Restore camera transform
 
                 // Update Coordinates HTML
@@ -357,6 +377,14 @@
                     this.checkpoints[this.level - 1].active = true;
                     // Objectives removed from HUD
                 } else { this.victory(); }
+            },
+            triggerExplosions: function() {
+                 this.state = 'exploding';
+                 this.explosionStartTime = Date.now();
+                 if (this.timerInterval) clearInterval(this.timerInterval);
+                 setTimeout(() => {
+                     this.gameOver();
+                 }, 2500);
             },
             gameOver: function() {
                 this.state = 'gameover';
