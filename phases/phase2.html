@@ -160,16 +160,25 @@
         </div>
 
         <div class="tool-box">
-            <h3>🪞 DIGITAL MIRROR DEVICE 🪞</h3>
+            <h3><span onclick="activateMirror()" style="cursor: pointer;" title="???">🪞</span> DIGITAL MIRROR DEVICE 🪞</h3>
             <p style="font-size: 0.8em; color: #888; margin-bottom: 15px;">วางข้อความที่ถอดรหัสแล้วที่นี่ เพื่อสะท้อนหาความจริง</p>
             
             <input type="text" id="mirror-input" placeholder="Paste Decoded Text Here...">
             <br>
-            <button onclick="activateMirror()">🔄 ACTIVATE REFLECTION</button>
+            
+            <!-- Mirror Puzzle Area -->
+            <div style="display: flex; justify-content: center; gap: 40px; margin: 25px 0;">
+                <div onclick="alert('กระจกบานนี้ขุ่นมัว... มองไม่เห็นความจริง')" style="font-size: 3.5rem; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">🪞</div>
+                
+                <div onclick="alert('แค่กระจกธรรมดา... ไม่มีอะไรเกิดขึ้น')" style="font-size: 3.5rem; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">🪞</div>
+                
+                <div onclick="alert('เงาสะท้อนในกระจกนี้ดูบิดเบี้ยว...')" style="font-size: 3.5rem; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">🪞</div>
+            </div>
+            <p style="font-size: 0.8em; color: #666; margin-bottom: 20px;">( จงหากระจกวิเศษที่ซ่อนอยู่... )</p>
 
             <div class="mirror-display" id="mirror-result">
                 [ WAITING FOR INPUT ]
-            </div>
+            </div>  
         </div>
 
         <div style="margin-top: 40px;">

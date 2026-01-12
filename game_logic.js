@@ -56,12 +56,12 @@
                 { id: 1, x: 418, y: 376, w: 296, h: 106, width: 296, height: 106, color: '#ef4444', active: true, label: 'PHASE 1: DIGI', icon: '📡' },
                 { id: 2, x: 2366, y: 333, w: 290, h: 83, width: 290, height: 150, color: '#fbbf24', active: false, label: 'PHASE 2: Forest', icon: '🌲' },
                 { id: 3, x: 801, y: 389, w: 290, h: 97, width: 290, height: 97, color: '#fbbf24', active: false, label: 'PHASE 3: LIBRARY', icon: '🏠' },
-                { id: 4, x: 1612, y: 977, w: 230, h: 437, width: 158, height: 76, color: '#a855f7', active: false, label: 'PHASE : F10 ADMIN', icon: '🏫' }
+                { id: 4, x: 1612, y: 977, w: 230, h: 437, width: 158, height: 76, color: '#a855f7', active: false, label: 'PHASE : Suranapa', icon: '🏫' }
             ],
             config: {
                 symmetricKey: "SUT-BOMB-SECRET-2026",
                 otpSeed: "JBSWY3DPEHPK3PXP",
-                locationCode: "F109"
+                locationCode: "Suranapa"
             },
             timeLeft: 7200,
             timerInterval: null,
