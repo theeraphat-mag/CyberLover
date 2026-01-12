@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SUT Bomb Defusal - CTF</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -282,7 +283,7 @@
         <div class="stage" id="stage1">
             <div class="stage-header">
                 <h2>🔐 ด่านที่ 1: Cryptography (RSA)</h2>
-                <button id="hintBtn" class="hint-btn" onclick="window.showHint1()"> คำใบ้</button>
+                <button id="hintBtn" class="hint-btn" onclick="showHint1()"><i class="fa-regular fa-lightbulb"></i> คำใบ้</button>
             </div>
             <p style="margin-bottom: 20px;">คุณสามารถใช้คอมพิวเตอร์ของคนร้ายได้ ค้นหา Private Key และถอดรหัสข้อความลับ!</p>
             
@@ -316,7 +317,8 @@
         <div class="modal-content">
             <span class="close-btn" onclick="window.closeModal('encryptedModal')">&times;</span>
             <h2>🔒 secret_key.enc</h2>
-            <p>ไฟล์นี้ถูกเข้ารหัสด้วยรหัสผ่าน</p>
+            <p style="margin-top: 10px;">ไฟล์นี้ถูกเข้ารหัสด้วยรหัสผ่าน</p>
+            <p style="margin-top: 10px; margin-bottom: 10px;">คำใบ้: GSV KZHHDLIW RH LMV GDL GSIVV ULFI</p>
             <input type="password" id="filePassword" placeholder="ใส่รหัสผ่าน...">
             <button onclick="window.unlockFile()">ปลดล็อก</button>
             <div id="fileContent" class="hidden" style="margin-top: 20px;">
@@ -456,13 +458,13 @@ decrypt.setPrivateKey(\`วาง_Private_Key_A_ที่นี่\");</pre>
                 modalTitle.style.color = "#ffcc00"; 
                 modalBody.innerHTML = `<p style="text-align: center;">ระบบกำลังประมวลผลข้อมูล...<br><br>คำใบ้จะเปิดในอีก <span style="color: #ff0000; font-weight: bold; font-size: 1.2em;">${m} นาที ${s} วินาที</span></p>`;
             } else {
-                modalTitle.textContent = "💡 คำใบ้ด่านที่ 1";
+                modalTitle.textContent = "คำใบ้";
                 modalTitle.style.color = "#00ff00";
                 modalBody.innerHTML = `
-                    <ul style="margin-left: 20px; list-style-type: disc;">
-                        <li style="margin-bottom: 10px;">The first shall be last, and the last shall be first</li>
-                        <li style="margin-bottom: 10px;">GSV KZHHDLIW RH LMV GDL GSIVV ULFI</li> 
-                    </ul>`;
+                    <div style="margin-left: 20px; list-style-type: disc;">
+                        <div style="margin-bottom: 10px;">The first shall be last, and the last shall be first</div>
+                        <div style="margin-bottom: 10px;">ผู้มาก่อนจะเป็นผู้ตามหลัง และผู้ตามหลังจะกลับมาเป็นผู้มาก่อน</div> 
+                    </div>`;
             }
             
             document.getElementById('hintModal').style.display = 'flex';
