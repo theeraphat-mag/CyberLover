@@ -488,3 +488,9 @@
             }
         }
        
+        window.finishGame = function() {
+            if (typeof game !== 'undefined') {
+                console.log("Mission Complete -> Next Level");
+                game.completeLevel(); // สั่งให้ Engine ไปด่านถัดไป
+            }
+        }

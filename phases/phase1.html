@@ -257,7 +257,11 @@
                 <h1 style="color: #00ff00; font-size: 2.5em;">🎉 MISSION COMPLETED 🎉</h1>
                 <p class="success" style="font-size: 1.5em; margin: 20px 0;">ถอดรหัสสำเร็จ!</p>
                 <div class="key-display" id="nextCode" style="font-size: 1.5em; text-align: center;"></div>
-            </div>
+
+                <button onclick="finishGame()" style="margin-top: 30px; background: #ff0000; color: #fff; font-size: 1.2em; border: 2px solid #fff; padding: 15px 30px;">
+                    ❌ ปิดหน้าต่างภารกิจ (Close)
+                </button>
+                </div>
         </div>
     </div>
 
@@ -567,10 +571,22 @@ MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAPKmEuxBM49H1LsPD9O4koj8WIpUe2Ef
             addMessage('received', `🎉 ภารกิจสำเร็จ! ข้อความลับคือ:\n${encryptedSecret}`);
             setTimeout(() => {
                 const nextCode = "NjIwMi1URVJDRVMtQk1PQi1UVVM=";
+
+                document.querySelectorAll('.modal').forEach(modal => {
+                    modal.style.display = 'none';
+                });
+
                 document.getElementById('stage1').classList.add('hidden');
                 document.getElementById('stage2').classList.remove('hidden');
                 document.getElementById('nextCode').textContent = nextCode;
+
+            //     if (typeof game !== 'undefined' && game.completeLevel) {
+            //     game.completeLevel();
+            // }
+                
             }, 5000);
+
+            
         }
     })();
     </script>
