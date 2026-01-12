@@ -41,6 +41,17 @@
             width: 90%; max-width: 800px; max-height: 90vh; overflow-y: auto;
             background: #1a1a1a; border: 4px solid #fbbf24;
             box-shadow: 0 0 0 100vmax rgba(0,0,0,0.8); z-index: 100; padding: 20px; display: none;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 30px;
+            color: white;
+            cursor: pointer;
+            z-index: 101;
         }
 
         #phase-modal::-webkit-scrollbar { width: 10px; }
@@ -119,6 +130,7 @@
     <canvas id="game-canvas" style="display:none;"></canvas>
 
     <div id="phase-modal">
+        <span class="close-btn" onclick="window.game.closeModal()">&times;</span>
         <div id="modal-content"></div>
     </div>
 
