@@ -367,15 +367,38 @@
                 this.state = 'playing'; 
             },
             completeLevel: function() {
-                // Ensure chat intervals are cleared if they exist from phase 1
                 if (window.chatInterval) clearInterval(window.chatInterval);
-                
                 this.closeModal();
                 this.level++;
                 if (this.level <= this.checkpoints.length) {
                     this.checkpoints[this.level - 1].active = true;
-                    // Objectives removed from HUD
-                } else { this.victory(); }
+                } else { 
+                    this.playHeroVideo();
+                }
+            },
+            playHeroVideo: function() {
+                this.state = 'cutscene';
+                document.getElementById('game-canvas').style.display = 'none';
+                document.getElementById('mission-hud').style.display = 'none';
+                document.getElementById('timer-hud').style.display = 'none';
+                document.getElementById('phase-modal').style.display = 'none';
+
+                const heroVideo = document.getElementById('hero-video');
+                heroVideo.style.display = 'block';
+                heroVideo.play().catch(e => {
+                    console.error("Hero video playback failed:", e);
+                    this.victory(); // Play victory screen anyway
+                });
+
+                const endVideo = () => {
+                    heroVideo.style.display = 'none';
+                    heroVideo.onended = null;
+                    heroVideo.onclick = null;
+                    this.victory();
+                };
+
+                heroVideo.onended = endVideo;
+                heroVideo.onclick = endVideo; // Allow skipping
             },
             triggerExplosions: function() {
                  this.state = 'exploding';
@@ -393,7 +416,7 @@
                 this.state = 'victory';
                 clearInterval(this.timerInterval);
 
-                // Hide game elements
+                // Hide game elements that might still be visible
                 document.getElementById('game-canvas').style.display = 'none';
                 document.getElementById('mission-hud').style.display = 'none';
                 document.getElementById('timer-hud').style.display = 'none';
@@ -416,7 +439,6 @@
 
                         // Clear the existing victory screen and inject new content from body
                         victoryScreen.innerHTML = '';
-                        // Move all children from the fetched body to the victory screen
                         const victoryBody = doc.body;
                         while (victoryBody.firstChild) {
                             victoryScreen.appendChild(victoryBody.firstChild);
@@ -433,11 +455,9 @@
                             Array.from(oldScript.attributes)
                               .forEach( attr => newScript.setAttribute(attr.name, attr.value) );
                             newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-                            // Append to document.body to ensure execution after all elements are in place
                             document.body.appendChild(newScript);
-                            oldScript.remove(); // Remove the original script tag from the injected content
+                            oldScript.remove(); 
                         });
-
                     })
                     .catch(err => {
                         console.error('Failed to load victory screen:', err);
