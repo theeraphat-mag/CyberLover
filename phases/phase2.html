@@ -150,7 +150,7 @@
     <div class="container">
         <div class="header">
             <h1>🌲 PHASE 2: FOREST MIRROR</h1>
-            <div class="timer" id="phase2-timer">00:00:00</div>
+            <div class="timer" id="timer">02:00:00</div>
         </div>
 
         <div class="artifact-box">
@@ -197,20 +197,31 @@
 
     <script>
     (function() {
-        // Sync Timer
+        // Sync Timer with Global Game Time
         function syncPhase2Timer() {
-            const timerEl = document.getElementById('phase2-timer');
-            if (typeof game !== 'undefined' && game.timeLeft !== undefined) {
-                const timeLeft = game.timeLeft;
+            // Try to find the timer element within the modal context specifically if possible, or global
+            const timerEl = document.getElementById('timer');
+            if (!timerEl) return;
+
+            // Check if global game object exists
+            if (window.game && window.game.timeLeft !== undefined) {
+                const timeLeft = window.game.timeLeft;
                 const h = Math.floor(timeLeft / 3600).toString().padStart(2, '0');
                 const m = Math.floor((timeLeft % 3600) / 60).toString().padStart(2, '0');
                 const s = (timeLeft % 60).toString().padStart(2, '0');
-                if(timerEl) timerEl.textContent = `${h}:${m}:${s}`;
+                timerEl.textContent = `${h}:${m}:${s}`;
+            } else {
+                timerEl.textContent = "--:--:--";
             }
         }
         
+        // Clear any existing interval to prevent duplicates
         if(window.phase2SyncInterval) clearInterval(window.phase2SyncInterval);
+        
+        // Start new interval
         window.phase2SyncInterval = setInterval(syncPhase2Timer, 1000);
+        
+        // Initial call
         syncPhase2Timer();
 
         // Mirror Function Logic

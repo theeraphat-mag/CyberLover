@@ -101,9 +101,13 @@
 </head>
 <body>
 
-    <div id="mission-hud" class="hud-panel" style="display:none;">
-        <h3 style="color:#fbbf24; margin-bottom:10px;">MISSION OBJECTIVE</h3>
-        <p id="objective-text">Go to the SUT Farm (WIFI Tower) to intercept the signal.</p>
+    <div id="mission-hud" class="hud-panel" style="display:none; min-width: 200px;">
+        <h3 style="color:#fbbf24; margin-bottom:10px; border-bottom: 1px solid #444; padding-bottom: 5px;">📡 GPS NAVIGATION</h3>
+        <div style="display: flex; flex-direction: column; gap: 5px;">
+            <p style="color: #4ade80; font-size: 12px;">ZONE: <span style="color: white;">SUT SECTOR</span></p>
+            <p style="color: #4ade80; font-size: 12px;">POS X: <span id="player-x" style="color: white;">0</span></p>
+            <p style="color: #4ade80; font-size: 12px;">POS Y: <span id="player-y" style="color: white;">0</span></p>
+        </div>
         <div style="margin-top:10px; font-size:8px; color:#aaa;">[WASD] Move | [SHIFT] Sprint</div>
     </div>
     
