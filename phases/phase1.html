@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SUT Bomb Defusal - CTF</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -264,39 +265,9 @@
             width: 95%;
             padding: 40px;
         }
-
-        .main-close-btn {
-            position: fixed;
-            right: 30px;
-            top: 30px;
-            font-size: 40px;
-            cursor: pointer;
-            color: #ff0000;
-            background: rgba(0, 0, 0, 0.7);
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid #ff0000;
-            z-index: 1000;
-            transition: all 0.3s;
-        }
-
-        .main-close-btn:hover {
-            background: rgba(255, 0, 0, 0.2);
-            transform: scale(1.1);
-        }
     </style>
 </head>
 <body>
-<a href="../index.html" id="exit-btn" style="position:fixed;top:24px;right:24px;z-index:9999;text-decoration:none;background:#222;border-radius:50%;width:48px;height:48px;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 0 10px #000;" title="กลับหน้าหลัก">
-    <span style="font-size:2em;color:#fff;font-weight:bold;">&times;</span>
-</a>
-
-
-
     <div class="container">
         <div class="header">
             <h1>🚨 SUT BOMB DEFUSAL 🚨</h1>
@@ -312,7 +283,7 @@
         <div class="stage" id="stage1">
             <div class="stage-header">
                 <h2>🔐 ด่านที่ 1: Cryptography (RSA)</h2>
-                <button id="hintBtn" class="hint-btn" onclick="window.showHint1()"> คำใบ้</button>
+                <button id="hintBtn" class="hint-btn" onclick="showHint1()"><i class="fa-regular fa-lightbulb"></i> คำใบ้</button>
             </div>
             <p style="margin-bottom: 20px;">คุณสามารถใช้คอมพิวเตอร์ของคนร้ายได้ ค้นหา Private Key และถอดรหัสข้อความลับ!</p>
             
@@ -346,7 +317,8 @@
         <div class="modal-content">
             <span class="close-btn" onclick="window.closeModal('encryptedModal')">&times;</span>
             <h2>🔒 secret_key.enc</h2>
-            <p>ไฟล์นี้ถูกเข้ารหัสด้วยรหัสผ่าน</p>
+            <p style="margin-top: 10px;">ไฟล์นี้ถูกเข้ารหัสด้วยรหัสผ่าน</p>
+            <p style="margin-top: 10px; margin-bottom: 10px;">คำใบ้: GSV KZHHDLIW RH LMV GDL GSIVV ULFI</p>
             <input type="password" id="filePassword" placeholder="ใส่รหัสผ่าน...">
             <button onclick="window.unlockFile()">ปลดล็อก</button>
             <div id="fileContent" class="hidden" style="margin-top: 20px;">
@@ -372,7 +344,6 @@
         <div class="modal-content">
             <span class="close-btn" onclick="window.closeModal('chatModal')">&times;</span>
             <h2>💬 ห้องแชทเข้ารหัส</h2>
-            <div class="chat-window" id="chatWindow"></div>
             <div>
                 <label>ส่งข้อความ (Plain Text):</label>
                 <input type="text" id="messageInput" placeholder="พิมพ์คำตอบ...">
@@ -388,7 +359,6 @@
             <h2 id="hintModalTitle">คำใบ้ (Hint)</h2>
             <div id="hintModalBody" style="margin-top: 20px; font-size: 1.1em; line-height: 1.6;"></div>
         </div>
-    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/3.3.2/jsencrypt.min.js"></script>
     <script>
@@ -398,7 +368,6 @@
 MIIBVgIBADANBgkqhkiG9w0BAQEFAASCAUAwggE8AgEAAkEA8qYS7EEzj0fUuw8P
 07iSiPxYilR7YR/alLsEwGiZMjv5Vd5a9RW71NslIPGtel7LqwCS75a1dc+57XOH
 IYv2jwIDAQABAkAsIiiu7+0A0n/Oxh6K07dTUxKHlnYaZEDNbHagyGWUzRkQeJYf
-20Inw/G8uXPS6CZGoScZwXCqdRBgWCLAQE0BAiEA/J0qp3wCeuJTQM8OvzheiA2M
 rQXhs7m93SR+dIrdtrkCIQD15rZO9BAeLSjY90Xh9y1s4EzGELJgqbwRPktBfCfz
 hwIhAJLvOChDUY34p0RDK+i9+P5aI0Fg8m9/0pgW6hcPzvbBAiEA5eb7ghvLyfrc
 2uVtT9QCg22+Odw4egmXjOOaBrKmw5cCIQCZmTATaOa9JUxLsuQWvypdQKCSlZVB
@@ -412,7 +381,6 @@ MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAPKmEuxBM49H1LsPD9O4koj8WIpUe2Ef
 
         const PUBLIC_KEY_B = `-----BEGIN PUBLIC KEY-----
 MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAOGPL2PuAOwLPw4mRJUblK4R1hylRimS
-Aasz2d+7JEb3Bxi7TT0tXfkSK8czEVWd+9+MwyjHsT+svuUomB/OOBUCAwEAAQ==
 -----END PUBLIC KEY-----`;
 
         const PRIVATE_KEY_B = `-----BEGIN RSA PRIVATE KEY-----
@@ -490,13 +458,13 @@ decrypt.setPrivateKey(\`วาง_Private_Key_A_ที่นี่\");</pre>
                 modalTitle.style.color = "#ffcc00"; 
                 modalBody.innerHTML = `<p style="text-align: center;">ระบบกำลังประมวลผลข้อมูล...<br><br>คำใบ้จะเปิดในอีก <span style="color: #ff0000; font-weight: bold; font-size: 1.2em;">${m} นาที ${s} วินาที</span></p>`;
             } else {
-                modalTitle.textContent = "💡 คำใบ้ด่านที่ 1";
+                modalTitle.textContent = "คำใบ้";
                 modalTitle.style.color = "#00ff00";
                 modalBody.innerHTML = `
-                    <ul style="margin-left: 20px; list-style-type: disc;">
-                        <li style="margin-bottom: 10px;">The first shall be last, and the last shall be first</li>
-                        <li style="margin-bottom: 10px;">GSV KZHHDLIW RH LMV GDL GSIVV ULFI</li> 
-                    </ul>`;
+                    <div style="margin-left: 20px; list-style-type: disc;">
+                        <div style="margin-bottom: 10px;">The first shall be last, and the last shall be first</div>
+                        <div style="margin-bottom: 10px;">ผู้มาก่อนจะเป็นผู้ตามหลัง และผู้ตามหลังจะกลับมาเป็นผู้มาก่อน</div> 
+                    </div>`;
             }
             
             document.getElementById('hintModal').style.display = 'flex';

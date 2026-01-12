@@ -38,16 +38,10 @@
         
         #phase-modal {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 90%; max-width: 800px; max-height: 90vh;
+            width: 90%; max-width: 800px; max-height: 90vh; overflow-y: auto;
             background: #1a1a1a; border: 4px solid #fbbf24;
             box-shadow: 0 0 0 100vmax rgba(0,0,0,0.8); z-index: 100; padding: 20px; display: none;
-            display: none; /* Keep original display none behavior, will be overridden by JS */
-        }
-
-        #modal-scroll-container {
-            overflow-y: auto;
-            max-height: calc(90vh - 40px); /* Adjust for padding */
-            width: 100%;
+        
         }
 
         #phase-modal::-webkit-scrollbar { width: 10px; }
@@ -69,13 +63,48 @@
             position: fixed; inset: 0; background: rgba(0,0,0,0.95);
             display: none; flex-direction: column; align-items: center; justify-content: center;
             z-index: 200; text-align: center;
+            overflow: hidden;
+        }
+
+        /* --- Victory Animations --- */
+        @keyframes trophy-shake {
+            0% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(-10deg) scale(1.1); }
+            50% { transform: rotate(10deg) scale(1.1); }
+            75% { transform: rotate(-10deg) scale(1.1); }
+            100% { transform: rotate(0deg) scale(1); }
+        }
+
+        #victory-trophy {
+            font-size: 100px;
+            margin-bottom: 20px;
+            animation: trophy-shake 0.8s ease-in-out infinite;
+            filter: drop-shadow(0 0 20px rgba(251, 191, 36, 0.6));
+        }
+
+        .confetti {
+            position: absolute;
+            top: -20px;
+            width: 12px;
+            height: 12px;
+            opacity: 0.9;
+            border-radius: 2px;
+            z-index: 10; /* Behind text (text is implicitly higher due to flex order but safer to check) */
+            pointer-events: none;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
         }
     </style>
 </head>
 <body>
 
-    <div id="coordinates-hud" class="hud-panel" style="display:none; top: 20px; left: 20px; color: #4ade80;">
-        X: <span id="player-x">0</span> Y: <span id="player-y">0</span>
+    <div id="mission-hud" class="hud-panel" style="display:none;">
+        <h3 style="color:#fbbf24; margin-bottom:10px;">MISSION OBJECTIVE</h3>
+        <p id="objective-text">Go to the SUT Farm (WIFI Tower) to intercept the signal.</p>
+        <div style="margin-top:10px; font-size:8px; color:#aaa;">[WASD] Move | [SHIFT] Sprint</div>
     </div>
     
     <div id="timer-hud" class="hud-panel" style="display:none;">
@@ -90,17 +119,16 @@
 
     <canvas id="game-canvas" style="display:none;"></canvas>
 
-    <div id="phase-modal" style="display: none;">
-        <div id="modal-scroll-container">
-            <div id="modal-content"></div>
-        </div>
+    <div id="phase-modal">
+        <span class="close-btn" onclick="window.game.closeModal()">&times;</span>
+        <div id="modal-content"></div>
     </div>
 
     <div id="victory-screen">
-        <div style="font-size: 80px;">🏆</div>
-        <h1 style="color: #4ade80; margin: 20px 0;">MISSION COMPLETE</h1>
-        <p style="color: white; line-height: 2;">SUT IS SAFE.<br>FLAG: <span style="color:#fbbf24">SUT{CPE_RPG_HERO_2026}</span></p>
-        <button onclick="location.reload()" class="btn-military" style="width: 200px; margin-top: 30px;">PLAY AGAIN</button>
+        <div id="victory-trophy">🏆</div>
+        <h1 style="color: #4ade80; margin: 20px 0; z-index: 20; position: relative;">MISSION COMPLETE</h1>
+        <p style="color: white; line-height: 2; z-index: 20; position: relative;">SUT IS SAFE.<br>FLAG: <span style="color:#fbbf24">SUT{CPE_RPG_HERO_2026}</span></p>
+        <button onclick="location.reload()" class="btn-military" style="width: 200px; margin-top: 30px; z-index: 20; position: relative;">PLAY AGAIN</button>
     </div>
 
     <video id="intro-video" style="display:none; position:fixed; inset:0; width:100%; height:100%; object-fit:cover; z-index:300; background:black;">
@@ -108,7 +136,33 @@
     </video>
 
     <script src="game_logic.js"></script>
+
     <script>
+        // Global Confetti Function
+        window.startConfetti = function() {
+            const colors = ['#ef4444', '#fbbf24', '#4ade80', '#60a5fa', '#a78bfa', '#ec4899'];
+            const container = document.getElementById('victory-screen');
+            
+            // Create 150 pieces of confetti
+            for (let i = 0; i < 150; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                
+                // Randomize position and animation properties
+                const startLeft = Math.random() * 100;
+                const animDuration = Math.random() * 3 + 2; // 2-5s
+                const animDelay = Math.random() * 2; // 0-2s
+                
+                confetti.style.left = `${startLeft}vw`;
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDuration = `${animDuration}s`;
+                confetti.style.animationDelay = `${animDelay}s`;
+                
+                container.appendChild(confetti);
+            }
+        };
+
+        let startGame;
         window.onload = () => {
             // Aggressive Zoom Prevention
             const preventZoom = (e) => {
@@ -122,11 +176,28 @@
                 if (e.ctrlKey && ['=', '-', '+', '0'].includes(e.key)) e.preventDefault();
             });
 
+
             window.addEventListener('wheel', preventZoom, { passive: false });
             window.addEventListener('gesturestart', preventZoom, { passive: false });
             window.addEventListener('gesturechange', preventZoom, { passive: false });
             window.addEventListener('gestureend', preventZoom, { passive: false });
 
+            function startGame() {
+                const introVideo = document.getElementById('intro-video');
+                if (introVideo) {
+                    introVideo.pause();
+                    introVideo.style.display = 'none';
+                    introVideo.onended = null;
+                    introVideo.onclick = null;
+                }
+                document.getElementById('game-canvas').style.display = 'block';
+                document.getElementById('mission-hud').style.display = 'block';
+                document.getElementById('timer-hud').style.display = 'block';
+                if (typeof game !== 'undefined' && game.init) {
+                    game.init();
+                }
+            }
+        
             // Start Button Logic
             document.getElementById('start-btn').addEventListener('click', () => {
                 const introVideo = document.getElementById('intro-video');
@@ -149,16 +220,7 @@
                     startGame();
                 };
 
-                function startGame() {
-                    introVideo.pause();
-                    introVideo.style.display = 'none';
-                    document.getElementById('game-canvas').style.display = 'block';
-                    document.getElementById('coordinates-hud').style.display = 'block';
-                    document.getElementById('timer-hud').style.display = 'block';
-                    if (typeof game !== 'undefined' && game.init) {
-                        game.init();
-                    }
-                }
+                
             });
         };
     </script>

@@ -13,6 +13,7 @@
             // Assets
             mapImage: new Image(),
             playerSprite: new Image(),
+            explosionImage: new Image(),
             assetsLoaded: 0,
 
             // World
@@ -53,7 +54,7 @@
             // Set these using coordinates from map_tool.html
             checkpoints: [
                 { id: 1, x: 418, y: 376, w: 296, h: 106, width: 296, height: 106, color: '#ef4444', active: true, label: 'PHASE 1: DIGI', icon: '📡' },
-                { id: 2, x: 2326, y: 389, w: 290, color: '#fbbf24', active: false, label: 'PHASE 2: Forest', icon: '🌲' },
+                { id: 2, x: 2326, y: 389, w: 290, h: 150, width: 290, height: 150, color: '#fbbf24', active: false, label: 'PHASE 2: Forest', icon: '🌲' },
                 { id: 3, x: 801, y: 389, w: 290, h: 97, width: 290, height: 97, color: '#fbbf24', active: false, label: 'PHASE 3: LIBRARY', icon: '🏠' },
                 { id: 4, x: 544, y: 518, w: 158, h: 76, width: 158, height: 76, color: '#a855f7', active: false, label: 'PHASE : F10 ADMIN', icon: '🏫' }
             ],
@@ -67,6 +68,7 @@
             timerInterval: null,
             otpInterval: null,
             currentOTP: null,
+            explosionStartTime: 0,
 
             init: function() {
                 // Expose global functions for HTML access
@@ -85,6 +87,7 @@
 
                 this.mapImage.src = 'sut_map.png'; 
                 this.playerSprite.src = 'https://i.imgur.com/f2a1p7I.png'; 
+                this.explosionImage.src = 'explosion_effect.png';
                 
                 this.mapImage.onload = () => {
                     this.assetsLoaded++;
@@ -106,6 +109,7 @@
                 };
                 
                 this.playerSprite.onload = () => this.assetsLoaded++;
+                this.explosionImage.onload = () => this.assetsLoaded++;
 
                 this.startTimer();
                 this.gameLoop();
@@ -120,7 +124,7 @@
             startTimer: function() {
                 this.timerInterval = setInterval(() => {
                     if (this.state !== 'playing' && this.state !== 'paused') return;
-                    if (this.timeLeft <= 0) { this.gameOver(); return; }
+                    if (this.timeLeft <= 0) { this.triggerExplosions(); return; }
                     this.timeLeft--;
                     const h = Math.floor(this.timeLeft / 3600).toString().padStart(2, '0');
                     const m = Math.floor((this.timeLeft % 3600) / 60).toString().padStart(2, '0');
@@ -301,6 +305,21 @@
 
                 this.ctx.restore(); // Restore player transform
 
+                if (this.state === 'exploding') {
+                     const elapsed = Date.now() - this.explosionStartTime;
+                     const duration = 2000;
+                     const t = Math.min(elapsed / duration, 1);
+                     const scale = 1 - Math.pow(1 - t, 3); // Ease out cubic
+
+                     this.obstacles.forEach(obs => {
+                         const maxSize = Math.max(obs.w, obs.h) * 1.5;
+                         const currentSize = maxSize * scale;
+                         const cx = obs.x + obs.w / 2 - currentSize / 2;
+                         const cy = obs.y + obs.h / 2 - currentSize / 2;
+                         this.ctx.drawImage(this.explosionImage, cx, cy, currentSize, currentSize);
+                     });
+                }
+
                 this.ctx.restore(); // Restore camera transform
 
                 // Update Coordinates HTML
@@ -313,10 +332,12 @@
             },
 
             gameLoop: function() {
+                if (this.state === 'menu') return;
                 this.update();
                 this.draw();
                 requestAnimationFrame(() => this.gameLoop());
             },
+
 
             checkRectCollision: function(r1, r2) {
                 return (r1.x < r2.x + r2.w && r1.x + r1.w > r2.x && r1.y < r2.y + r2.h && r1.y + r1.h > r2.y);
@@ -357,6 +378,14 @@
                     // Objectives removed from HUD
                 } else { this.victory(); }
             },
+            triggerExplosions: function() {
+                 this.state = 'exploding';
+                 this.explosionStartTime = Date.now();
+                 if (this.timerInterval) clearInterval(this.timerInterval);
+                 setTimeout(() => {
+                     this.gameOver();
+                 }, 2500);
+            },
             gameOver: function() {
                 this.state = 'gameover';
                 document.body.innerHTML = `<div style="display:flex;justify-content:center;align-items:center;height:100vh;background:black;color:red;flex-direction:column;"><h1 style="font-size:4rem;">GAME OVER</h1><button onclick="location.reload()">RETRY</button></div>`;
@@ -364,6 +393,7 @@
             victory: function() {
                 this.state = 'victory';
                 document.getElementById('victory-screen').style.display = 'flex';
+                if (window.startConfetti) window.startConfetti();
                 clearInterval(this.timerInterval);
             },
             attachPhaseLogic: function(levelId) {
@@ -418,11 +448,44 @@
                         document.getElementById('otp-progress').style.width = ((60 - (now % 60)) / 60) * 100 + "%";
                     }
                 }, 1000);
-            }
+            },
+           exitGame: function () {
+            console.log("Exit Game → Back to Start");
+
+            this.state = 'menu';
+
+            if (this.timerInterval) clearInterval(this.timerInterval);
+            if (this.otpInterval) clearInterval(this.otpInterval);
+
+            this.timerInterval = null;
+            this.otpInterval = null;
+
+            this.timeLeft = 7200;
+            this.level = 1;
+
+            this.checkpoints.forEach((cp, i) => cp.active = (i === 0));
+
+            // ซ่อน UI เกม
+            ['phase-modal','game-canvas','mission-hud','timer-hud']
+                .forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.style.display = 'none';
+                });
+
+            // ✅ กลับ start screen
+            const startScreen = document.getElementById('start-screen');
+            if (startScreen) startScreen.style.display = 'flex';
+
+            // reset camera (กันภาพค้าง)
+            this.camera.x = 0;
+            this.camera.y = 0;
+        }
+
         };
 
         function globalCloseModal() {
-            const modal = document.getElementById('phase-modal');
-            if (modal) modal.style.display = 'none';
-            if (typeof game !== 'undefined') game.state = 'playing';
+            if (typeof game !== 'undefined') {
+                game.exitGame();
+            }
         }
+       
