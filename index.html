@@ -67,8 +67,10 @@
 </head>
 <body>
 
-    <div id="coordinates-hud" class="hud-panel" style="display:none; top: 20px; left: 20px; color: #4ade80;">
-        X: <span id="player-x">0</span> Y: <span id="player-y">0</span>
+    <div id="mission-hud" class="hud-panel" style="display:none;">
+        <h3 style="color:#fbbf24; margin-bottom:10px;">MISSION OBJECTIVE</h3>
+        <p id="objective-text">Go to the SUT Farm (WIFI Tower) to intercept the signal.</p>
+        <div style="margin-top:10px; font-size:8px; color:#aaa;">[WASD] Move | [SHIFT] Sprint</div>
     </div>
     
     <div id="timer-hud" class="hud-panel" style="display:none;">
@@ -144,7 +146,7 @@
                     introVideo.pause();
                     introVideo.style.display = 'none';
                     document.getElementById('game-canvas').style.display = 'block';
-                    document.getElementById('coordinates-hud').style.display = 'block';
+                    document.getElementById('mission-hud').style.display = 'block';
                     document.getElementById('timer-hud').style.display = 'block';
                     if (typeof game !== 'undefined' && game.init) {
                         game.init();

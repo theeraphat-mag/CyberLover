@@ -84,7 +84,6 @@
                 window.addEventListener('keyup', e => this.keys[e.key] = false);
 
                 this.mapImage.src = 'sut_map.png'; 
-                this.playerSprite.src = 'https://i.imgur.com/f2a1p7I.png'; 
                 
                 this.mapImage.onload = () => {
                     this.assetsLoaded++;
@@ -418,11 +417,54 @@
                         document.getElementById('otp-progress').style.width = ((60 - (now % 60)) / 60) * 100 + "%";
                     }
                 }, 1000);
+            },
+           exitGame: function () {
+            console.log("Exit Game → Back to Start");
+
+            this.state = 'menu';
+
+            if (this.timerInterval) {
+                clearInterval(this.timerInterval);
+                this.timerInterval = null;
             }
+
+            if (this.otpInterval) {
+                clearInterval(this.otpInterval);
+                this.otpInterval = null;
+            }
+
+            this.timeLeft = 7200;
+            this.level = 1;
+
+            if (this.checkpoints) {
+                this.checkpoints.forEach((cp, i) => cp.active = (i === 0));
+            }
+
+            if (this.player) {
+                this.player.x = this.worldWidth / 2;
+                this.player.y = this.worldHeight / 2;
+            }
+
+            // ✅ helper ปลอดภัย
+            const hide = (id) => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = 'none';
+            };
+
+            hide('phase-modal');
+            hide('game-canvas');
+            hide('coordinates-hud');
+            hide('timer-hud');
+
+            if (typeof startGame === 'function') {
+                startGame();
+            }
+        }
         };
 
         function globalCloseModal() {
-            const modal = document.getElementById('phase-modal');
-            if (modal) modal.style.display = 'none';
-            if (typeof game !== 'undefined') game.state = 'playing';
+            if (typeof game !== 'undefined') {
+                game.exitGame();
+            }
         }
+       
