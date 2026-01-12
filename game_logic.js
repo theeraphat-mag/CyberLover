@@ -54,15 +54,14 @@
             // Set these using coordinates from map_tool.html
             checkpoints: [
                 { id: 1, x: 418, y: 376, w: 296, h: 106, width: 296, height: 106, color: '#ef4444', active: true, label: 'PHASE 1: DIGI', icon: '📡' },
-                { id: 2, x: 2326, y: 389, w: 290, h: 150, width: 290, height: 150, color: '#fbbf24', active: false, label: 'PHASE 2: Forest', icon: '🌲' },
+                { id: 2, x: 2366, y: 333, w: 290, h: 83, width: 290, height: 150, color: '#fbbf24', active: false, label: 'PHASE 2: Forest', icon: '🌲' },
                 { id: 3, x: 801, y: 389, w: 290, h: 97, width: 290, height: 97, color: '#fbbf24', active: false, label: 'PHASE 3: LIBRARY', icon: '🏠' },
-                { id: 4, x: 544, y: 518, w: 158, h: 76, width: 158, height: 76, color: '#a855f7', active: true, label: 'PHASE : F10 ADMIN', icon: '🏫' }
+                { id: 4, x: 1534, y: 1464, w: 369, h: 103, width: 158, height: 76, color: '#a855f7', active: true, label: 'PHASE : Suranapa', icon: '🏫' }
             ],
-
             config: {
                 symmetricKey: "SUT-BOMB-SECRET-2026",
                 otpSeed: "JBSWY3DPEHPK3PXP",
-                locationCode: "F109"
+                locationCode: "Suranapa"
             },
             timeLeft: 7200,
             timerInterval: null,
@@ -537,5 +536,12 @@
         function globalCloseModal() {
             if (typeof game !== 'undefined') {
                 game.exitGame();
+            }
+        }
+       
+        window.finishGame = function() {
+            if (typeof game !== 'undefined') {
+                console.log("Mission Complete -> Next Level");
+                game.completeLevel(); // สั่งให้ Engine ไปด่านถัดไป
             }
         }
