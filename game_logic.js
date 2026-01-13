@@ -68,6 +68,7 @@
             otpInterval: null,
             currentOTP: null,
             explosionStartTime: 0,
+            particles: [],
 
             init: function() {
                 // Expose global functions for HTML access
@@ -133,6 +134,17 @@
             },
 
             update: function() {
+                if (this.state === 'exploding') {
+                    this.particles.forEach(p => {
+                        p.x += p.vx;
+                        p.y += p.vy;
+                        p.life -= 0.01;
+                        p.vx *= 0.98;
+                        p.vy *= 0.98;
+                    });
+                    this.particles = this.particles.filter(p => p.life > 0);
+                    return;
+                }
                 if (this.state !== 'playing') return;
 
                 this.player.moving = false;
@@ -317,6 +329,18 @@
                          const cy = obs.y + obs.h / 2 - currentSize / 2;
                          this.ctx.drawImage(this.explosionImage, cx, cy, currentSize, currentSize);
                      });
+
+                     // Draw Sparks
+                     this.ctx.globalCompositeOperation = 'lighter';
+                     this.particles.forEach(p => {
+                         this.ctx.globalAlpha = p.life;
+                         this.ctx.fillStyle = p.color;
+                         this.ctx.beginPath();
+                         this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                         this.ctx.fill();
+                     });
+                     this.ctx.globalCompositeOperation = 'source-over';
+                     this.ctx.globalAlpha = 1.0;
                 }
 
                 this.ctx.restore(); // Restore camera transform
@@ -403,10 +427,27 @@
             triggerExplosions: function() {
                  this.state = 'exploding';
                  this.explosionStartTime = Date.now();
+                 this.triggerSparks();
                  if (this.timerInterval) clearInterval(this.timerInterval);
                  setTimeout(() => {
                      this.gameOver();
-                 }, 2500);
+                 }, 4000);
+            },
+            triggerSparks: function() {
+                this.particles = [];
+                this.obstacles.forEach(obs => {
+                    for(let i = 0; i < 8; i++) {
+                        this.particles.push({
+                            x: obs.x + obs.w / 2,
+                            y: obs.y + obs.h / 2,
+                            vx: (Math.random() - 0.5) * 15,
+                            vy: (Math.random() - 0.5) * 15,
+                            life: 1.0,
+                            size: Math.random() * 4 + 2,
+                            color: Math.random() > 0.5 ? '#ffcc00' : '#ff4400'
+                        });
+                    }
+                });
             },
             gameOver: function() {
                 this.state = 'gameover';
