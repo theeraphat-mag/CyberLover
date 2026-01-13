@@ -4,154 +4,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SUT Phase 4 - Authorization (Hard Mode)</title>
+    <title>SUT Phase 4 - Real JWT Verification</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Courier New', monospace;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: #fff;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .stage {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 30px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #333;
-        }
-
-        .stage h2 {
-            color: #ef4444;
-            margin-bottom: 20px;
-            font-size: 1.5em;
-            text-align: center;
-        }
-
-        .role-tag {
-            display: inline-block;
-            padding: 10px 30px;
-            border: 2px solid #ef4444;
-            color: #ef4444;
-            font-size: 1.5em;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            margin: 20px 0;
-        }
-
-        .success-panel {
-            display: none;
-            background: rgba(34, 197, 94, 0.1);
-            border: 2px solid #22c55e;
-            border-radius: 10px;
-            padding: 40px;
-            text-align: center;
-        }
-
-        .success-btn {
-            padding: 15px 40px;
-            background: #22c55e;
-            color: #000;
-            border: none;
-            border-radius: 5px;
-            font-size: 1.1em;
-            font-weight: bold;
-            cursor: pointer;
-            text-transform: uppercase;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        /* CSS สำหรับข้อความ Error 403 แบบเดิม */
-        .header {
-            text-align: center;
-            padding: 20px;
-            background: rgba(255, 0, 0, 0.1);
-            border: 2px solid #ff0000;
-            border-radius: 10px;
-            margin-bottom: 30px;
-        }
-
-        .header h1 {
-            color: #ff0000;
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            text-shadow: 0 0 10px #ff0000;
-        }
-
-        .timer {
-            font-size: 3em;
-            color: #ff0000;
-            font-weight: bold;
-            margin: 20px 0;
-            text-shadow: 0 0 20px #ff0000;
-        }
-
-        .error-msg {
-            color: #ef4444;
-            font-size: 0.8em;
-            animation: blink 1s infinite;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 15px;
-        }
-
-        @keyframes blink {
-            50% {
-                opacity: 0;
-            }
-        }
-
-        /* Hint Box */
-        .hint-box {
-            background: rgba(0, 0, 0, 0.3);
-            border-left: 4px solid #ef4444;
-            padding: 15px;
-            margin-top: 30px;
-            text-align: left;
-            font-size: 0.85em;
-            color: #aaa;
-        }
-
-        .code-font {
-            font-family: 'Courier New', monospace;
-            color: #00ff41;
-            background: #000;
-            padding: 2px 5px;
-        }
-
-        .main-close-btn {
-            position: fixed;
-            right: 24px;
-            top: 24px;
-            font-size: 2em;
-            cursor: pointer;
-            color: #fff;
-            background: #222;
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid #fff;
-            text-decoration: none;
-        }
+        /* --- UI แบบเดิมที่คุณชอบ --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Courier New', monospace; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #fff; min-height: 100vh; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; }
+        
+        .header { text-align: center; padding: 20px; background: rgba(255, 0, 0, 0.1); border: 2px solid #ff0000; border-radius: 10px; margin-bottom: 30px; }
+        .header h1 { color: #ff0000; font-size: 2.5em; margin-bottom: 10px; text-shadow: 0 0 10px #ff0000; }
+        .timer { font-size: 3em; color: #ff0000; font-weight: bold; margin: 20px 0; text-shadow: 0 0 20px #ff0000; }
+        
+        .stage { background: rgba(255, 255, 255, 0.05); padding: 30px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #333; }
+        .stage h2 { color: #ef4444; margin-bottom: 20px; font-size: 1.5em; text-align: center; }
+        
+        .role-tag { display: inline-block; padding: 10px 30px; border: 2px solid #ef4444; color: #ef4444; font-size: 1.5em; font-weight: bold; text-transform: uppercase; letter-spacing: 3px; margin: 20px 0; }
+        
+        .error-msg { color: #ef4444; font-size: 0.8em; animation: blink 1s infinite; text-transform: uppercase; letter-spacing: 1px; margin-top: 15px; }
+        @keyframes blink { 50% { opacity: 0; } }
+        
+        .success-panel { display: none; background: rgba(34, 197, 94, 0.1); border: 2px solid #22c55e; border-radius: 10px; padding: 40px; text-align: center; }
+        .success-btn { padding: 15px 40px; background: #22c55e; color: #000; border: none; border-radius: 5px; font-size: 1.1em; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        
+        .hidden { display: none !important; }
+        
+        .hint-box { background: rgba(0, 0, 0, 0.3); border-left: 4px solid #ef4444; padding: 15px; margin-top: 30px; text-align: left; font-size: 0.85em; color: #aaa; }
+        .code-font { font-family: 'Courier New', monospace; color: #00ff41; background: #000; padding: 2px 5px; }
     </style>
 </head>
 
@@ -160,7 +38,6 @@
         <h1>🚨 SUT BOMB DEFUSAL 🚨</h1>
         <div class="timer" id="timer">02:00:00</div>
     </div>
-    <!-- <a href="../index.html" class="main-close-btn">&times;</a> -->
 
     <div class="container">
 
@@ -169,47 +46,84 @@
             <div style="text-align: center;">
                 <p style="color: #888; font-size: 0.9em; margin-bottom: 15px;">Privilege Status:</p>
                 <div id="role-tag" class="role-tag">Loading...</div>
-
                 <p id="error-msg" class="error-msg">Error 403: Forbidden - Admin permission required</p>
             </div>
-
+            
             <div class="hint-box">
-                <p><strong>SYSTEM LOG:</strong> Authentication failed.</p>
-                <p>> Protocol: <span class="code-font">RFC 7519</span> (Standard Implementation)</p>
-                <p>> Storage: Browser Local Storage</p>
-                <p>> Error: User role mismatch. Elevation required.</p>
-                <p>> Note: Debug key is hidden in the <strong>Console logs (Encoded)</strong>.</p>
+                <p><strong>SYSTEM LOG:</strong> [Real Crypto Verification Enabled]</p>
+                <p>> Algorithm: <span class="code-font">HMAC-SHA256</span> (Web Crypto API)</p>
+                <p>> Warning: Signature mismatch will result in immediate rejection.</p>
+                <p>> Debug: Secret Key hidden in <strong>Console Logs (Base64)</strong>.</p>
             </div>
         </div>
 
         <div id="success-panel" class="success-panel">
-            <div style="font-size: 80px;">🎉</div>
+            <div style="font-size: 80px;">🔓</div>
             <h3>SYSTEM OVERRIDDEN</h3>
-            <p>Welcome, Administrator.</p>
+            <p>Signature Verified. Welcome, Administrator.</p><br>
             <button onclick="completeMission()" class="success-btn">🔓 Execute Disarm Protocol</button>
         </div>
     </div>
 
     <script>
-        (function () {
-            // Secret Key จริงๆ (สำหรับ Logic)
-            const REAL_SECRET = "SUT_CPE_2026";
-
-            // Token เริ่มต้น (Standard HS256)
+        (function() {
+            // ==========================================
+            // ⚙️ REAL CONFIGURATION
+            // ==========================================
+            const SECRET_KEY = "SUT_CPE_2026"; 
             const DEFAULT_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoic3R1ZGVudCIsInVzZXIiOiJndWVzdCJ9.Xv8z55-P_1aD0Ua_e7dOQh-q7vT8y0x9Gz4wF8q7_w0";
 
-            function parseJwt(token) {
-                try {
-                    const base64Url = token.split('.')[1];
-                    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                    const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function (c) {
-                        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-                    }).join(''));
-                    return JSON.parse(jsonPayload);
-                } catch (e) { return null; }
+            // ==========================================
+            // 🔧 REAL CRYPTO ENGINE (HMAC-SHA256)
+            // ==========================================
+            function base64UrlEncode(str) {
+                return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
             }
 
-            // Sync Timer กับ game.timeLeft
+            function bufferToBase64Url(buffer) {
+                const bytes = new Uint8Array(buffer);
+                let binary = '';
+                for (let i = 0; i < bytes.byteLength; i++) {
+                    binary += String.fromCharCode(bytes[i]);
+                }
+                return base64UrlEncode(binary);
+            }
+
+            // ฟังก์ชันนี้คำนวณ Signature จริงๆ ไม่ใช่แค่ดู String
+            async function verifyJWT(token, secret) {
+                try {
+                    const parts = token.split('.');
+                    if (parts.length !== 3) return { valid: false, reason: "Invalid Token Format" };
+
+                    const [headerB64, payloadB64, signatureB64] = parts;
+                    
+                    // 1. Import Key
+                    const enc = new TextEncoder();
+                    const keyData = enc.encode(secret);
+                    const key = await crypto.subtle.importKey(
+                        "raw", keyData, { name: "HMAC", hash: "SHA-256" }, false, ["sign"]
+                    );
+
+                    // 2. คำนวณ Signature ใหม่
+                    const data = enc.encode(headerB64 + "." + payloadB64);
+                    const signatureBuffer = await crypto.subtle.sign("HMAC", key, data);
+                    const expectedSignature = bufferToBase64Url(signatureBuffer);
+
+                    // 3. เทียบ Signature
+                    if (expectedSignature === signatureB64) {
+                        const payload = JSON.parse(atob(payloadB64.replace(/-/g, '+').replace(/_/g, '/')));
+                        return { valid: true, payload: payload };
+                    } else {
+                        return { valid: false, reason: "Invalid Signature (Key mismatch or Tampered)" };
+                    }
+                } catch (e) {
+                    return { valid: false, reason: "Error Parsing" };
+                }
+            }
+
+            // ==========================================
+            // 🎮 MAIN LOGIC
+            // ==========================================
             function syncTimer() {
                 const timerEl = document.getElementById('timer');
                 if (typeof game !== 'undefined' && game.timeLeft !== undefined) {
@@ -223,34 +137,49 @@
             setInterval(syncTimer, 1000);
             syncTimer();
 
-            function checkAuthorization() {
+            async function checkAuthorization() {
                 if (!localStorage.getItem('jwt_token')) {
                     localStorage.setItem('jwt_token', DEFAULT_TOKEN);
                 }
 
                 const token = localStorage.getItem('jwt_token');
                 const roleTag = document.getElementById('role-tag');
+                const errorMsg = document.getElementById('error-msg');
                 const statusPanel = document.getElementById('status-panel');
                 const successPanel = document.getElementById('success-panel');
 
-                const payload = parseJwt(token);
+                // เรียกใช้ Crypto Engine
+                const result = await verifyJWT(token, SECRET_KEY);
 
-                if (payload) {
-                    const role = payload.role;
-                    if (roleTag) {
-                        roleTag.textContent = role ? role.toUpperCase() : 'UNKNOWN';
-                        if (role === 'admin') {
-                            roleTag.style.borderColor = '#22c55e';
-                            roleTag.style.color = '#22c55e';
-                            statusPanel.classList.add('hidden');
-                            successPanel.style.display = 'block';
-                        } else {
-                            roleTag.style.borderColor = '#ef4444';
-                            roleTag.style.color = '#ef4444';
-                            statusPanel.classList.remove('hidden');
-                            successPanel.style.display = 'none';
-                        }
+                if (result.valid) {
+                    // ถ้า Signature ถูก -> เช็ค Role
+                    const role = result.payload.role;
+                    if (roleTag) roleTag.textContent = role ? role.toUpperCase() : 'UNKNOWN';
+
+                    if (role === 'admin') {
+                        // ผ่านทุกอย่าง (Signature ถูก + Role เป็น Admin)
+                        roleTag.style.borderColor = '#22c55e';
+                        roleTag.style.color = '#22c55e';
+                        statusPanel.classList.add('hidden');
+                        successPanel.style.display = 'block';
+                    } else {
+                        // Signature ถูก แต่ยังเป็น Student
+                        roleTag.style.borderColor = '#ef4444';
+                        roleTag.style.color = '#ef4444';
+                        errorMsg.textContent = "Error 403: Forbidden - Admin permission required";
+                        statusPanel.classList.remove('hidden');
+                        successPanel.style.display = 'none';
                     }
+                } else {
+                    // Signature ผิด (แก้ Payload มั่ว หรือ ใส่ Key ผิด)
+                    if (roleTag) {
+                        roleTag.textContent = "TAMPERED";
+                        roleTag.style.borderColor = '#ff0000';
+                        roleTag.style.color = '#ff0000';
+                    }
+                    errorMsg.textContent = `Error 401: ${result.reason}`;
+                    statusPanel.classList.remove('hidden');
+                    successPanel.style.display = 'none';
                 }
             }
 
@@ -269,20 +198,14 @@
             setInterval(checkAuthorization, 1000);
 
             // ==========================================
-            // 🔥 HARD MODE HINTS (ใน Console) 🔥
+            // 🔥 CONSOLE HINTS 🔥
             // ==========================================
-            // console.log("%c🛑 STOP!", "color: red; font-size: 30px; font-weight: bold;");
-            // console.log("%cThis is a restricted area.", "font-size: 14px;");
-            // console.log("----------------------------------------");
-            // console.log("Debug Info Loaded...");
-            console.log("Auth Standard: JWT (JSON Web Token)");
-            console.log("%cU0VDUkVUX0tFWV9IQVNIIDo9IFNVVF9DUEVfMjAyNg==", "color: #00ff41; background: #000; padding: 5px;");
-
-
-            console.log("Hint: The hash looks like Base64...");
+            console.log("%c🔐 REAL CRYPTO VERIFICATION ACTIVE", "color: #00ff41; font-size: 16px; font-weight: bold;");
+            console.log("Algo: HMAC-SHA256 (Web Crypto API)");
+            console.log("%cW1NFQ1JFVF9LRVldU1VUX0NQRV8yMDI2", "background: #222; color: #00ff41; padding: 4px;");
+            console.log("Hint: You MUST sign the token with this key!");
 
         })();
     </script>
 </body>
-
 </html>
