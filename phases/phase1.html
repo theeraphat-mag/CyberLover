@@ -180,7 +180,33 @@
         .hint-timer-text { color: #ff3333; font-size: 0.9em; font-weight: bold; }
         .hint-content { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1); color: #ddd; font-size: 0.9em;}
         .hint-box.unlocked .hint-content { display: block; }
-        
+        /* PIN Code Styles */
+        .pin-code-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .pin-input {
+            width: 45px;
+            height: 70px;
+            font-size: 32px;
+            text-align: center;
+            background: #000;
+            border: 2px solid #00ff00;
+            border-radius: 8px;
+            color: #00ff00;
+            outline: none;
+            caret-color: transparent;
+        }
+        .pin-input:focus {
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+            border-color: #fff;
+        }
+        .pin-input::selection {
+            background: #00ff00;
+            color: #000;
+        }
     </style>
 </head>
 <body>
@@ -198,7 +224,7 @@
                     <h3>📖 เรื่องราว (Situation)</h3>
                     <p>มีรายงานการวางระเบิดในระบบ Server ของมหาวิทยาลัย! คนร้ายได้ทำการเข้ารหัสระบบสื่อสารเอาไว้...</p>
                     <br>
-                    <p style="color: #fff;">ภารกิจของคุณ: ค้นหา <b>Private Key</b> ในไฟล์ <code>secret_key.enc</code> (รหัสผ่านไฟล์เดาไม่ยาก) แล้วใช้มันสวมรอยเป็น User A เพื่อหลอกถามรหัสผ่านจากระบบ</p>
+                    <p style="color: #fff;">ภารกิจของคุณ: ค้นหา <b>Private Key</b> ในไฟล์ <code>secret_key.enc </code>(รหัสผ่านไฟล์เดาไม่ยาก) แล้วใช้มันสวมรอยเป็น User A เพื่อหลอกถามรหัสผ่านจากระบบ</p>
                 </div>
 
                 <div class="section-box">
@@ -269,8 +295,16 @@
         <div class="modal-content">
             <span class="close-btn" onclick="window.closeModal('encryptedModal')">&times;</span>
             <h2>🔒 secret_key.enc</h2>
-            <p>กรุณาใส่รหัสผ่านเพื่อ Decrypt ไฟล์:</p>
-            <input type="password" id="filePassword" placeholder="Password (4 digits)">
+            <p style="margin-bottom: 10px;">กรุณาใส่รหัสผ่านเพื่อ Decrypt ไฟล์:</p>
+            <p style="margin-bottom: 20px;">"GSV KZHHDLIW RH LMV GDL GSIVV ULFI"</p>
+            
+            <div class="pin-code-container">
+                <input type="text" class="pin-input" id="pin1" value="-" autocomplete="off">
+                <input type="text" class="pin-input" id="pin2" value="-" autocomplete="off">
+                <input type="text" class="pin-input" id="pin3" value="-" autocomplete="off">
+                <input type="text" class="pin-input" id="pin4" value="-" autocomplete="off">
+            </div>
+
             <button onclick="window.unlockFile()" style="width: 100%;">Unlock</button>
             <div id="fileContent" class="hidden" style="margin-top: 20px;">
                 <h3 style="color: #00ff00;">✅ Private Key A</h3>
@@ -302,7 +336,8 @@
                         <span class="hint-timer-text" id="hintTimer1">🔒 10:00</span>
                     </div>
                     <div class="hint-content">
-                        <p><b>คำแนะนำ:</b> ขั้นแรกคุณต้องมี Private Key ก่อน<br>รหัสผ่านของไฟล์ <code>secret_key.enc</code> เป็นตัวเลขง่ายๆ 4 ตัว (ลอง 1234 ดูหรือยัง?)</p>
+                        <p><b>คำแนะนำ:</b> ขั้นแรกคุณต้องมี Private Key ก่อน<br>คำใบ้: รหัสผ่านของไฟล์ <code>secret_key.enc</code> คือ</p> <br>
+                        <p>"The first shall be last, and the last shall be first."<br>(ผู้มาก่อนจะเป็นผู้ตามหลัง และผู้ตามหลังจะกลับมาเป็นผู้มาก่อน)</p>
                     </div>
                 </div>
 
@@ -312,12 +347,8 @@
                         <span class="hint-timer-text" id="hintTimer2">🔒 20:00</span>
                     </div>
                     <div class="hint-content">
-                        <p><b>การถอดรหัส:</b><br>เมื่อ Server ส่งข้อความเข้ารหัสมา ให้ใช้ Private Key ของเราในการถอดรหัส</p>
-                        <code style="display:block; background:#222; padding:5px; margin-top:5px; color:#0f0;">
-                            var decrypt = new JSEncrypt();<br>
-                            decrypt.setPrivateKey(PRIVATE_KEY_A);<br>
-                            var plain = decrypt.decrypt(encryptedMessage);
-                        </code>
+                        <p><b>คำแนะนำ:</b>คุณต้องส่งข้อความตอบกลับที่ถูกต้องเพื่อผ่านด่านนี้</p>
+                        <p><b>คำใบ้:</b>ใช้อัลกอริทึม RSA ในการถอดรหัส <br>515</p>
                     </div>
                 </div>
 
@@ -327,12 +358,9 @@
                         <span class="hint-timer-text" id="hintTimer3">🔒 30:00</span>
                     </div>
                     <div class="hint-content">
-                        <p><b>การส่งคำตอบ:</b><br>ต้องเข้ารหัสคำตอบด้วย <b>Public Key B</b> ก่อนส่งกลับไป ไม่งั้น Server จะอ่านไม่ออก</p>
-                        <code style="display:block; background:#222; padding:5px; margin-top:5px; color:#0f0;">
-                            var encrypt = new JSEncrypt();<br>
-                            encrypt.setPublicKey(PUBLIC_KEY_B);<br>
-                            var cipher = encrypt.encrypt(answer);
-                        </code>
+                        <p><b>คำใบ้:</b>ต้องถอดรหัสด้วย Private Key <br>และเข้ารหัสคำตอบด้วย Public Key ก่อนส่งกลับไป</p>
+                        <p>https://www.devglan.com/online-tools/rsa-encryption-decryption</p>
+                        
                     </div>
                 </div>
             </div>
@@ -376,53 +404,59 @@ HsG5mAMr3Jl6
         let correctAnswer = null;
         let waitingForAnswer = false;
 
-        // --- Config Hint Times (Seconds) ---
-        // 10 mins = 600s, 20 mins = 1200s, 30 mins = 1800s
-        // Timer starts at 7200 (2 hours)
-        const START_TIME = 7200; 
-        const HINT1_TRIGGER = START_TIME - 600;  // unlock at 01:50:00 remaining
-        const HINT2_TRIGGER = START_TIME - 1200; // unlock at 01:40:00 remaining
-        const HINT3_TRIGGER = START_TIME - 1800; // unlock at 01:30:00 remaining
-
-        let hintsUnlocked = { 1: false, 2: false, 3: false };
-
-        const timerElement = document.getElementById('timer');
-        let timeLeft = START_TIME; 
-
-        function updateTimer() {
-            timeLeft--; 
-            if (timeLeft < 0) timeLeft = 0;
-            
-            // Format Main Timer
-            const h = Math.floor(timeLeft / 3600);
-            const m = Math.floor((timeLeft % 3600) / 60);
-            const s = timeLeft % 60;
-            timerElement.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-
-            // Check Hints
-            checkHintUnlock(1, HINT1_TRIGGER);
-            checkHintUnlock(2, HINT2_TRIGGER);
-            checkHintUnlock(3, HINT3_TRIGGER);
-        }
-        setInterval(updateTimer, 1000);
-
-        function checkHintUnlock(boxNum, triggerTime) {
-            // Update countdown text inside box if locked
-            if (!hintsUnlocked[boxNum]) {
-                const secondsUntilUnlock = timeLeft - triggerTime;
-                if (secondsUntilUnlock > 0) {
-                    const mm = Math.floor(secondsUntilUnlock / 60);
-                    const ss = secondsUntilUnlock % 60;
-                    document.getElementById(`hintTimer${boxNum}`).textContent = `🔒 อีก ${mm}:${String(ss).padStart(2,'0')}`;
+                // --- Config Hint Times (Seconds) ---
+                // Hints unlock after a certain number of seconds since phase started
+                const HINT1_DELAY = 600;  // 1 minute after start
+                const HINT2_DELAY = 1200; // 2 minutes after start
+                const HINT3_DELAY = 1800; // 3 minutes after start
+        
+                let phaseStartTime = Date.now();
+                let hintsUnlocked = { 1: false, 2: false, 3: false };
+        
+                const timerElement = document.getElementById('timer');
+                // Sync with game timer if available, else default to 2 hours
+                let timeLeft = (typeof game !== 'undefined') ? game.timeLeft : 7200; 
+        
+                function updateTimer() {
+                    // Sync with main game loop if possible
+                    if (typeof game !== 'undefined') {
+                        timeLeft = game.timeLeft;
+                    } else {
+                        timeLeft--; 
+                    }
+                    
+                    if (timeLeft < 0) timeLeft = 0;
+                    
+                    // Format Main Timer
+                    const h = Math.floor(timeLeft / 3600);
+                    const m = Math.floor((timeLeft % 3600) / 60);
+                    const s = timeLeft % 60;
+                    timerElement.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        
+                    // Check Hints based on elapsed time since phase start
+                    const elapsedSinceStart = Math.floor((Date.now() - phaseStartTime) / 1000);
+                    checkHintUnlock(1, HINT1_DELAY, elapsedSinceStart);
+                    checkHintUnlock(2, HINT2_DELAY, elapsedSinceStart);
+                    checkHintUnlock(3, HINT3_DELAY, elapsedSinceStart);
                 }
-            }
-
-            // Unlock condition
-            if (timeLeft <= triggerTime && !hintsUnlocked[boxNum]) {
-                unlockHint(boxNum);
-            }
-        }
-
+                setInterval(updateTimer, 1000);
+        
+                function checkHintUnlock(boxNum, delay, elapsed) {
+                    // Update countdown text inside box if locked
+                    if (!hintsUnlocked[boxNum]) {
+                        const secondsUntilUnlock = delay - elapsed;
+                        if (secondsUntilUnlock > 0) {
+                            const mm = Math.floor(secondsUntilUnlock / 60);
+                            const ss = secondsUntilUnlock % 60;
+                            document.getElementById(`hintTimer${boxNum}`).textContent = `🔒 อีก ${mm}:${String(ss).padStart(2,'0')}`;
+                        }
+                    }
+        
+                    // Unlock condition
+                    if (elapsed >= delay && !hintsUnlocked[boxNum]) {
+                        unlockHint(boxNum);
+                    }
+                }
         function unlockHint(boxNum) {
             hintsUnlocked[boxNum] = true;
             
@@ -470,8 +504,83 @@ HsG5mAMr3Jl6
             document.getElementById('hintBadge').style.display = 'none';
         }
 
+        // Setup PIN Input Logic
+        setTimeout(() => {
+            const inputs = document.querySelectorAll('.pin-input');
+            
+            // Auto focus first input when modal opens
+            const originalOpenFile = window.openFile;
+            window.openFile = function(type) {
+                originalOpenFile(type);
+                if (type === 'encrypted') {
+                    setTimeout(() => {
+                        const p1 = document.getElementById('pin1');
+                        p1.focus();
+                        if(p1.value === '-') p1.setSelectionRange(0, 1);
+                    }, 100);
+                }
+            };
+
+            inputs.forEach((input, index) => {
+                input.addEventListener('focus', (e) => {
+                    if (input.value === '-') {
+                        input.setSelectionRange(0, 1);
+                    }
+                });
+
+                input.addEventListener('input', (e) => {
+                    let val = e.target.value;
+                    
+                    // Remove the hyphen if it exists mixed with other chars
+                    val = val.replace(/-/g, '');
+                    
+                    if (val.length > 0) {
+                        // Take the last typed character
+                        const char = val.slice(-1);
+                        input.setAttribute('data-value', char);
+                        input.value = 'X';
+                        
+                        // Move to next
+                        const next = document.getElementById(`pin${index + 2}`);
+                        if (next) {
+                            next.focus();
+                            if(next.value === '-') next.setSelectionRange(0, 1);
+                        }
+                    } else {
+                        // If empty (e.g. deleted), restore hyphen
+                        input.value = '-';
+                        input.removeAttribute('data-value');
+                    }
+                });
+
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace') {
+                        e.preventDefault();
+                        input.value = '-';
+                        input.removeAttribute('data-value');
+                        
+                        // Move to previous if current was already empty/hyphen
+                        if (index > 0) {
+                            const prev = document.getElementById(`pin${index}`);
+                            if (prev) {
+                                prev.focus();
+                                prev.value = '-'; 
+                                prev.removeAttribute('data-value');
+                                prev.setSelectionRange(0, 1);
+                            }
+                        }
+                    }
+                });
+            });
+        }, 500);
+
         window.unlockFile = function() {
-            const pwd = document.getElementById('filePassword').value;
+            const p1 = document.getElementById('pin1').getAttribute('data-value') || '';
+            const p2 = document.getElementById('pin2').getAttribute('data-value') || '';
+            const p3 = document.getElementById('pin3').getAttribute('data-value') || '';
+            const p4 = document.getElementById('pin4').getAttribute('data-value') || '';
+            const pwd = p1 + p2 + p3 + p4;
+
             if (pwd === '1234') {
                 document.getElementById('fileContent').classList.remove('hidden');
                 document.getElementById('privateKeyA').textContent = PRIVATE_KEY_A;
@@ -495,6 +604,15 @@ HsG5mAMr3Jl6
 
             } else {
                 alert('❌ Password Incorrect');
+                // Reset Inputs
+                const inputs = document.querySelectorAll('.pin-input');
+                inputs.forEach(input => {
+                    input.value = '-';
+                    input.removeAttribute('data-value');
+                });
+                const p1 = document.getElementById('pin1');
+                p1.focus();
+                p1.setSelectionRange(0, 1);
             }
         }
 
@@ -568,9 +686,9 @@ MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAPKmEuxBM49H1LsPD9O4koj8WIpUe2Ef
             encrypt.setPublicKey(PUBLIC_KEY_A_SIM);
             const encryptedSecret = encrypt.encrypt(secret);
             
-            addMessage('received', `🎉 ภารกิจสำเร็จ! ข้อความลับคือ:\n${encryptedSecret}`);
+            // addMessage('received', `🎉 ภารกิจสำเร็จ! ข้อความลับคือ:\n${encryptedSecret}`);
             setTimeout(() => {
-                const nextCode = "NjIwMi1URVJDRVMtQk1PQi1UVVM=";
+                const nextCode = "เราเห็นว่าคุณทำได้ดีมาก! เราอยากให้คุณพักสักหน่อย\nไปเดินเล่นในป่า เพื่อสูดอากาศบริสุทธิ์สักหน่อยสิ !!!";
 
                 document.querySelectorAll('.modal').forEach(modal => {
                     modal.style.display = 'none';
@@ -578,7 +696,7 @@ MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAPKmEuxBM49H1LsPD9O4koj8WIpUe2Ef
 
                 document.getElementById('stage1').classList.add('hidden');
                 document.getElementById('stage2').classList.remove('hidden');
-                document.getElementById('nextCode').textContent = nextCode;
+                document.getElementById('nextCode').innerText = nextCode;
 
             //     if (typeof game !== 'undefined' && game.completeLevel) {
             //     game.completeLevel();
