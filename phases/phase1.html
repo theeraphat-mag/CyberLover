@@ -347,7 +347,7 @@
                         <span class="hint-timer-text" id="hintTimer2">🔒 20:00</span>
                     </div>
                     <div class="hint-content">
-                        <p><b>คำแนะนำ:</b>คุณต้องส่งข้อความตอบกลับที่ถูกต้องเพื่อผ่านด่านนี้</p>
+                        <b>คำแนะนำ:<p>https://www.devglan.com/online-tools/rsa-encryption-decryption</p></b>
                         <p><b>คำใบ้:</b>ใช้อัลกอริทึม RSA ในการถอดรหัส <br>515</p>
                     </div>
                 </div>
@@ -359,7 +359,7 @@
                     </div>
                     <div class="hint-content">
                         <p><b>คำใบ้:</b>ต้องถอดรหัสด้วย Private Key <br>และเข้ารหัสคำตอบด้วย Public Key ก่อนส่งกลับไป</p>
-                        <p>https://www.devglan.com/online-tools/rsa-encryption-decryption</p>
+                        
                         
                     </div>
                 </div>
@@ -636,10 +636,10 @@ HsG5mAMr3Jl6
             currentQuestion = `Calculate: ${n1} + ${n2}`;
 
             const encrypt = new JSEncrypt();
-            const PUBLIC_KEY_A_SIM = `-----BEGIN PUBLIC KEY-----
+            const PUBLIC_KEY_A_SIM = `
 MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAPKmEuxBM49H1LsPD9O4koj8WIpUe2Ef
 2pS7BMBomTI7+VXeWvUVu9TbJSDxrXpey6sAku+WtXXPue1zhyGL9o8CAwEAAQ==
------END PUBLIC KEY-----`;
+`;
             encrypt.setPublicKey(PUBLIC_KEY_A_SIM);
             const encryptedMsg = encrypt.encrypt(currentQuestion);
 
@@ -679,10 +679,9 @@ MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAPKmEuxBM49H1LsPD9O4koj8WIpUe2Ef
         function sendFinalSecret() {
             const secret = "SUT-2026-FINAL-KEY";
             const encrypt = new JSEncrypt();
-            const PUBLIC_KEY_A_SIM = `-----BEGIN PUBLIC KEY-----
+            const PUBLIC_KEY_A_SIM = `
 MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAPKmEuxBM49H1LsPD9O4koj8WIpUe2Ef
-2pS7BMBomTI7+VXeWvUVu9TbJSDxrXpey6sAku+WtXXPue1zhyGL9o8CAwEAAQ==
------END PUBLIC KEY-----`;
+2pS7BMBomTI7+VXeWvUVu9TbJSDxrXpey6sAku+WtXXPue1zhyGL9o8CAwEAAQ==`;
             encrypt.setPublicKey(PUBLIC_KEY_A_SIM);
             const encryptedSecret = encrypt.encrypt(secret);
             
