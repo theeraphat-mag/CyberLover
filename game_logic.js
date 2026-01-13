@@ -61,7 +61,7 @@
             config: {
                 symmetricKey: "SUT-BOMB-SECRET-2026",
                 otpSeed: "JBSWY3DPEHPK3PXP",
-                locationCode: "Suranapa"
+                locationCode: "SURANAPA"
             },
             timeLeft: 7200,
             timerInterval: null,
