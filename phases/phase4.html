@@ -53,7 +53,7 @@
                 <p><strong>SYSTEM LOG:</strong> [Real Crypto Verification Enabled]</p>
                 <p>> Algorithm: <span class="code-font">HMAC-SHA256</span></p>
                 <p>> Warning: หาก Signature ไม่ตรงกัน คำขอจะถูกปฏิเสธทันที</p>
-                <p>> Debug: Secret Key ถูกซ่อนไว้ใน <strong>(Base64)</strong></p>
+                <p>> Debug: Secret Key ถูกซ่อนไว้ใน <strong>console log (Base64)</strong></p>
                 <p>> Hint: JWT Structure - Header.Payload.Signature</p>
             </div>
         </div>
@@ -216,7 +216,7 @@
             // 🔥 CONSOLE HINTS 🔥
             // ==========================================
             console.log("%c🔐 REAL CRYPTO VERIFICATION ACTIVE", "color: #00ff41; font-size: 16px; font-weight: bold;");
-            console.log("Algo: HMAC-SHA256 (Web Crypto API)");
+            console.log("Algo: HMAC-SHA256");
             console.log("%cW1NFQ1JFVF9LRVldU1VUX0NQRV8yMDI2", "background: #222; color: #00ff41; padding: 4px;");
             console.log("Hint: You MUST sign the token with this key!");
 
