@@ -51,9 +51,10 @@
             
             <div class="hint-box">
                 <p><strong>SYSTEM LOG:</strong> [Real Crypto Verification Enabled]</p>
-                <p>> Algorithm: <span class="code-font">HMAC-SHA256</span> (Web Crypto API)</p>
-                <p>> Warning: Signature mismatch will result in immediate rejection.</p>
-                <p>> Debug: Secret Key hidden in <strong>Console Logs (Base64)</strong>.</p>
+                <p>> Algorithm: <span class="code-font">HMAC-SHA256</span></p>
+                <p>> Warning: หาก Signature ไม่ตรงกัน คำขอจะถูกปฏิเสธทันที</p>
+                <p>> Debug: Secret Key ถูกซ่อนไว้ใน <strong>(Base64)</strong></p>
+                <p>> Hint: JWT Structure - Header.Payload.Signature</p>
             </div>
         </div>
 
@@ -71,7 +72,6 @@
             // ⚙️ REAL CONFIGURATION
             // ==========================================
             const SECRET_KEY = "SUT_CPE_2026"; 
-            const DEFAULT_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoic3R1ZGVudCIsInVzZXIiOiJndWVzdCJ9.Xv8z55-P_1aD0Ua_e7dOQh-q7vT8y0x9Gz4wF8q7_w0";
 
             // ==========================================
             // 🔧 REAL CRYPTO ENGINE (HMAC-SHA256)
@@ -89,7 +89,31 @@
                 return base64UrlEncode(binary);
             }
 
-            // ฟังก์ชันนี้คำนวณ Signature จริงๆ ไม่ใช่แค่ดู String
+            // [NEW] ฟังก์ชันสำหรับ Import Key (ใช้ทั้งตอนสร้างและตรวจสอบ)
+            async function importKey(secret) {
+                const enc = new TextEncoder();
+                return await crypto.subtle.importKey(
+                    "raw", enc.encode(secret), 
+                    { name: "HMAC", hash: "SHA-256" }, 
+                    false, ["sign", "verify"]
+                );
+            }
+
+            // [NEW] ฟังก์ชันสร้าง Token ของจริง (ใช้ตอนเริ่มเกม)
+            async function createToken(payload, secret) {
+                const header = JSON.stringify({alg: "HS256", typ: "JWT"});
+                const headerB64 = base64UrlEncode(header);
+                const payloadB64 = base64UrlEncode(JSON.stringify(payload));
+                
+                const key = await importKey(secret);
+                const data = new TextEncoder().encode(headerB64 + "." + payloadB64);
+                const signatureBuffer = await crypto.subtle.sign("HMAC", key, data);
+                const signatureB64 = bufferToBase64Url(signatureBuffer);
+                
+                return `${headerB64}.${payloadB64}.${signatureB64}`;
+            }
+
+            // ฟังก์ชันตรวจสอบ Token
             async function verifyJWT(token, secret) {
                 try {
                     const parts = token.split('.');
@@ -97,19 +121,11 @@
 
                     const [headerB64, payloadB64, signatureB64] = parts;
                     
-                    // 1. Import Key
-                    const enc = new TextEncoder();
-                    const keyData = enc.encode(secret);
-                    const key = await crypto.subtle.importKey(
-                        "raw", keyData, { name: "HMAC", hash: "SHA-256" }, false, ["sign"]
-                    );
-
-                    // 2. คำนวณ Signature ใหม่
-                    const data = enc.encode(headerB64 + "." + payloadB64);
+                    const key = await importKey(secret);
+                    const data = new TextEncoder().encode(headerB64 + "." + payloadB64);
                     const signatureBuffer = await crypto.subtle.sign("HMAC", key, data);
                     const expectedSignature = bufferToBase64Url(signatureBuffer);
 
-                    // 3. เทียบ Signature
                     if (expectedSignature === signatureB64) {
                         const payload = JSON.parse(atob(payloadB64.replace(/-/g, '+').replace(/_/g, '/')));
                         return { valid: true, payload: payload };
@@ -138,8 +154,10 @@
             syncTimer();
 
             async function checkAuthorization() {
+                // [FIX] ถ้าไม่มี Token ให้สร้าง Token "Student" ของจริง (Signed with correct Key)
                 if (!localStorage.getItem('jwt_token')) {
-                    localStorage.setItem('jwt_token', DEFAULT_TOKEN);
+                    const studentToken = await createToken({role: "student", user: "guest"}, SECRET_KEY);
+                    localStorage.setItem('jwt_token', studentToken);
                 }
 
                 const token = localStorage.getItem('jwt_token');
@@ -163,7 +181,7 @@
                         statusPanel.classList.add('hidden');
                         successPanel.style.display = 'block';
                     } else {
-                        // Signature ถูก แต่ยังเป็น Student
+                        // Signature ถูก แต่ยังเป็น Student (403 - Stable State)
                         roleTag.style.borderColor = '#ef4444';
                         roleTag.style.color = '#ef4444';
                         errorMsg.textContent = "Error 403: Forbidden - Admin permission required";
@@ -171,7 +189,6 @@
                         successPanel.style.display = 'none';
                     }
                 } else {
-                    // Signature ผิด (แก้ Payload มั่ว หรือ ใส่ Key ผิด)
                     if (roleTag) {
                         roleTag.textContent = "TAMPERED";
                         roleTag.style.borderColor = '#ff0000';
@@ -191,10 +208,8 @@
                 }
             }
 
-            // Init
-            if (!localStorage.getItem('jwt_token')) {
-                localStorage.setItem('jwt_token', DEFAULT_TOKEN);
-            }
+            // Init Check (เรียกทันทีเพื่อให้สร้าง Token ก่อน)
+            checkAuthorization();
             setInterval(checkAuthorization, 1000);
 
             // ==========================================
